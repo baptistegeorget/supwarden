@@ -6,7 +6,6 @@ import clientPromise from "@/lib/mongodb"
 import { signInSchema } from "@/lib/zod"
 import { hashPassword } from "@/utils/password"
 import { getUserWithCredentials } from "@/utils/db"
-import { ZodError } from "zod"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: MongoDBAdapter(clientPromise),
@@ -25,18 +24,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           let user = await getUserWithCredentials(email, pwHash)
 
-          if (!user) {
-            throw new Error("User not found.")
-          }
-
           return user
         } catch (error) {
-          if (error instanceof ZodError) {
-            const errors = error.errors.map(err => ({ path: err.path, message: err.message }))
-            throw new Error(JSON.stringify(errors))
-          } else {
-            throw new Error(error instanceof Error ? error.message : 'Unknown error')
-          }
+          return null
         }
       },
     })
