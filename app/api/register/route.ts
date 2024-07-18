@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { signUpSchema } from "@/lib/zod"
-import { checkExistenceEmail, createUser } from "@/utils/db"
+import { checkEmailIsUsed, createUser } from "@/utils/db"
 import { hashPassword } from "@/utils/password"
 import { ZodError } from "zod"
 
@@ -10,9 +10,9 @@ export async function POST(request: NextRequest) {
     
     const { firstName, lastName, email, password } = await signUpSchema.parseAsync(requestBody)
 
-    const isEmailExist = await checkExistenceEmail(email)
+    const isEmailUsed = await checkEmailIsUsed(email)
     
-    if (isEmailExist) {
+    if (isEmailUsed) {
       return NextResponse.json({ error: "User already exist" }, { status: 400 })
     }
 
