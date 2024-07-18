@@ -1,70 +1,53 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
-export function CredentialsSignUp() {
-  const formRef = useRef<HTMLFormElement>(null)
+export default function RegistrationForm() {
+  const router = useRouter()
 
   const [error, setError] = useState<string | null>(null)
 
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
-
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-
+  async function handleAction(formData: FormData) {
     setError(null)
 
-    setSuccessMessage(null)
+    const data = {
+      firstName: formData.get('firstName') as string,
+      lastName: formData.get('lastName') as string,
+      email: formData.get('email') as string,
+      password: formData.get('password') as string,
+      passwordConfirmation: formData.get('passwordConfirmation') as string,
+    }
 
-    const form = formRef.current
+    if (data.password !== data.passwordConfirmation) {
+      return setError("Passwords don't match")
+    }
 
-    if (form) {
-      const formData = new FormData(form)
+    const response = await fetch('/api/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password,
+      })
+    })
 
-      const data = {
-        firstName: formData.get('firstName') as string,
-        lastName: formData.get('lastName') as string,
-        email: formData.get('email') as string,
-        password: formData.get('password') as string,
-        passwordConfirmation: formData.get('passwordConfirmation') as string,
-      }
-
-      if (data.password !== data.passwordConfirmation) {
-        return setError("Passwords don't match")
-      }
-
-      try {
-        const response = await fetch('/api/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            firstName: data.firstName,
-            lastName: data.lastName,
-            email: data.email,
-            password: data.password,
-          })
-        })
-
-        if (response.ok) {
-          form.reset()
-          return setSuccessMessage("Successful registration")
-        } else {
-          const result = await response.json()
-          return setError(result.error)
-        }
-      } catch (error) {
-        return setError("An error occurred while submitting the form")
-      }
+    if (response.ok) {
+      router.push("/login")
+    } else {
+      const result = await response.json()
+      return setError(result.error)
     }
   }
 
   return (
     <form
-      ref={formRef}
       className="flex flex-col gap-2 w-full items-center"
-      onSubmit={handleSubmit}
+      action={handleAction}
     >
       <div className="w-full flex flex-col gap-1">
         <p>*First name</p>
@@ -119,12 +102,13 @@ export function CredentialsSignUp() {
           type="password"
           name="passwordConfirmation"
           required={true}
+          minLength={8}
+          maxLength={32}
           placeholder="Enter your password"
           className="py-1 px-2 rounded w-full border border-neutral-700 bg-transparent"
         />
       </div>
       {error && <p className="text-red-500">{error}</p>}
-      {successMessage && <p className="text-green-500">{successMessage}</p>}
       <button type="submit" className="bg-white text-black rounded mt-4 py-1 w-32">Sign up</button>
     </form>
   )

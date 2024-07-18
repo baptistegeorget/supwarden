@@ -1,5 +1,7 @@
-import crypto from "crypto"
+import bcrypt from "bcrypt"
 
-export function hashPassword(password: string) {
-  return crypto.createHash("sha256").update(password).digest("hex")
+export async function hashPassword(password: string) {
+  const saltRounds = 10
+  const hashedPassword = await bcrypt.hash(password, saltRounds)
+  return hashedPassword
 }

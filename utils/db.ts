@@ -1,37 +1,26 @@
 import clientPromise from "@/lib/mongodb"
+import { User } from "@/types"
 
-export async function getUserByCredentials(email: string, password: string) {
+export async function checkExistenceEmail(email: string) {
   const client = await clientPromise
 
   const db = client.db()
 
-  const users = db.collection("users")
-
-  const user = await users.findOne({ email, password })
-
-  return user
-}
-
-export async function getUserByEmail(email: string) {
-  const client = await clientPromise
-
-  const db = client.db()
-
-  const users = db.collection("users")
+  const users = db.collection<User>("users")
 
   const user = await users.findOne({ email })
 
-  return user
+  return !!user
 }
 
-export async function saveUser(firstName: string, lastName: string, email: string, password: string) {
+export async function createUser(firstName: string, lastName: string, email: string, password: string) {
   const client = await clientPromise
 
   const db = client.db()
 
-  const users = db.collection("users")
+  const users = db.collection<User>("users")
 
-  const user = await users.insertOne({ name: firstName + " " + lastName, email, password })
+  const user = await users.insertOne({ firstName, lastName, email, password })
 
-  return user
+  return user.insertedId.toString()
 }
