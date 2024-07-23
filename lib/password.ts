@@ -1,12 +1,6 @@
-import bcrypt from "bcrypt"
+import { createHash } from "crypto"
 
-export async function saltAndHashPassword(password: string) {
-  const saltRounds = 10
-  const hashedPassword = await bcrypt.hash(password, saltRounds)
+export function hashPassword(password: string) {
+  const hashedPassword = createHash("sha256").update(password).digest("hex")
   return hashedPassword
-}
-
-export async function comparePasswords(password: string, hashedPassword: string) {
-  const isMatch = await bcrypt.compare(password, hashedPassword)
-  return isMatch
 }
