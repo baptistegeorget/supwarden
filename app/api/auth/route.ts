@@ -1,4 +1,4 @@
-import { getUserByCredentials, getUserById } from "@/lib/db"
+import { getUserByCredentials } from "@/lib/db"
 import { hashPassword } from "@/lib/password"
 import { signInSchema } from "@/lib/zod"
 import { ZodError } from "zod"

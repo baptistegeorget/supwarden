@@ -17,9 +17,9 @@ export async function POST(request: Request) {
     }
 
     const user: User = {
-      firstName: firstName.toLowerCase(),
-      lastName: lastName.toLowerCase(),
-      email: email.toLowerCase(),
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
       password: hashPassword(password)
     }
 
