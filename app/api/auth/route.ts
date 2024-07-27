@@ -2,13 +2,8 @@ import { getUserByCredentials } from "@/lib/db"
 import { hashPassword } from "@/lib/password"
 import { signInSchema } from "@/lib/zod"
 import { ZodError } from "zod"
-import jwt from "jsonwebtoken"
-
-if (!process.env.JWT_SECRET) {
-  throw new Error('Invalid/Missing environment variable: "JWT_SECRET"')
-}
-
-const jwtSecret = process.env.JWT_SECRET
+import { Session } from "@/types"
+import { sign } from "@/lib/jwt"
 
 export async function POST(request: Request) {
   try {
@@ -24,7 +19,15 @@ export async function POST(request: Request) {
       return Response.json({ error: "Invalid credentials" }, { status: 400 })
     }
 
-    const token = jwt.sign(user, jwtSecret, { expiresIn: "1h" })
+    const session: Session = {
+      user: {
+        id: user._id.toString(),
+        email: user.email,
+        name: user.firstName + " " + user.lastName,
+      }
+    }
+
+    const token = sign(session)
 
     return Response.json({ token }, { status: 200 })
   } catch (error) {
