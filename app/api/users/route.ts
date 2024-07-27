@@ -1,8 +1,8 @@
 import { signUpSchema } from "@/lib/zod"
-import { checkEmailIsUsed, createUser } from "@/lib/db"
+import { checkEmailIsUsed, createFolder, createUser } from "@/lib/db"
 import { hashPassword } from "@/lib/password"
 import { ZodError } from "zod"
-import { User } from "@/types"
+import { Folder, User } from "@/types"
 
 export async function POST(request: Request) {
   try {
@@ -23,7 +23,18 @@ export async function POST(request: Request) {
       password: hashPassword(password)
     }
 
-    await createUser(user)
+    const result = await createUser(user)
+
+    const folder: Folder = {
+      name: "Personal",
+      type: "personal",
+      createdBy: result.insertedId,
+      createdOn: new Date().toISOString(),
+      modifiedBy: result.insertedId,
+      modifiedOn: new Date().toISOString(),
+    }
+
+    await createFolder(folder)
 
     return Response.json(null, { status: 201 })
   } catch (error) {
