@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb"
+
 export type User = {
   lastName: string,
   firstName: string,
@@ -9,26 +11,26 @@ export type User = {
 export type Folder = {
   name: string,
   type: "personal" | "shared",
-  members?: string[],
-  createdBy: string,
+  members?: ObjectId[],
+  createdBy: ObjectId,
   createdOn: string,
-  modifiedBy: string,
+  modifiedBy: ObjectId,
   modifiedOn: string,
 }
 
 export type Element = {
-  folder: string,
+  folder: ObjectId,
   name: string,
   identifier?: string,
   password?: string,
   urls?: string[],
   note?: string,
   customFields?: CustomField[],
-  usersWhoCanEdit?: string[],
+  usersWhoCanEdit?: ObjectId[],
   isSensitive?: boolean,
-  createdBy: string,
+  createdBy: ObjectId,
   createdOn: string,
-  modifiedBy: string,
+  modifiedBy: ObjectId,
   modifiedOn: string,
 }
 
