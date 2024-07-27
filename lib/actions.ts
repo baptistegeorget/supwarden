@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers"
 import jwt from "jsonwebtoken"
-import { User } from "@/types"
+import { Folder, User } from "@/types"
 import { redirect } from "next/navigation"
 import { WithId } from "mongodb"
 
@@ -48,21 +48,17 @@ export async function decodeAuthToken(authToken: string) {
     return authUser
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
-      redirect("/signin")
+      throw new Error("Token expired")
     }
     throw new Error("Invalid token")
   }
 }
 
-export async function createSharedFolder(formData: FormData) {
+export async function createSharedFolder(name: string) {
   const authToken = cookies().get("auth-token")?.value
 
   if (!authToken) {
     redirect("/signin")
-  }
-
-  const data = {
-    name: formData.get("name") as string,
   }
 
   const response = await fetch(`${baseUrl}/api/folders`, {
@@ -71,7 +67,7 @@ export async function createSharedFolder(formData: FormData) {
       "Content-Type": "application/json",
       Authorization: authToken,
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify({ name }),
   })
 
   if (response.ok) {
@@ -79,5 +75,26 @@ export async function createSharedFolder(formData: FormData) {
   } else {
     const result = await response.json()
     return result.error
+  }
+}
+
+export async function getFolders() {
+  const authToken = cookies().get("auth-token")?.value
+
+  if (!authToken) {
+    return []
+  }
+
+  const response = await fetch(`${baseUrl}/api/folders`, {
+    headers: {
+      Authorization: authToken,
+    },
+  })
+
+  if (response.ok) {
+    const folders: WithId<Folder>[] = await response.json()
+    return folders
+  } else {
+    return []
   }
 }
