@@ -1,6 +1,14 @@
+import { auth } from "@/lib/actions"
 import Link from "next/link"
+import { redirect } from "next/navigation"
 
 export default async function HomePage() {
+  const user = await auth()
+
+  if (!user) {
+    redirect("/signin")
+  }
+
   return (
     <>
       <header className="h-20 flex border-b border-neutral-700">
