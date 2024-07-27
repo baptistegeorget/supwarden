@@ -25,18 +25,13 @@ export type Element = {
   password?: string,
   urls?: string[],
   note?: string,
-  customFields?: CustomField[],
+  customFields?: { type: "visible" | "hidden" | "attachment", value: string }[],
   usersWhoCanEdit?: ObjectId[],
   isSensitive?: boolean,
   createdBy: ObjectId,
   createdOn: string,
   modifiedBy: ObjectId,
   modifiedOn: string,
-}
-
-type CustomField = {
-  type: "visible" | "hidden" | "attachment",
-  value: string,
 }
 
 export type Session = {
