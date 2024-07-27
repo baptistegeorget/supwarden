@@ -38,3 +38,11 @@ type CustomField = {
   type: "visible" | "hidden" | "attachment",
   value: string,
 }
+
+export type Session = {
+  user: {
+    id: string,
+    email: string,
+    name: string,
+  }
+}
