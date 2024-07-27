@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { setAuthToken } from "@/lib/actions"
+import { setAuthTokenCookie } from "@/lib/actions"
 
 export default function SignInPage() {
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
@@ -31,7 +31,7 @@ export default function SignInPage() {
 
     if (response.ok) {
       const result = await response.json()
-      await setAuthToken(result.token)
+      await setAuthTokenCookie(result.token)
       router.push("/")
     } else {
       const result = await response.json()
