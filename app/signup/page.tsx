@@ -1,13 +1,25 @@
 "use client"
 
+import { auth } from "@/lib/actions"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function SignUpPage() {
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
 
   const router = useRouter()
+
+  useEffect(() => {
+    async function checkAuthUser() {
+      const user = await auth()
+
+      if (user) {
+        router.push("/")
+      }
+    }
+    checkAuthUser()
+  }, [router])
 
   async function handleSignUpForm(formData: FormData) {
     setErrorMessage(undefined)
