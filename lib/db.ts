@@ -33,7 +33,7 @@ export async function getUserByCredentials(email: string, password: string) {
 
   const usersCollection = db.collection<User>("users")
 
-  const user = await usersCollection.findOne({ email, password }, { projection: { password: 0 } })
+  const user = await usersCollection.findOne({ email, password }, { projection: { password: 0, pin: 0 } })
 
   return user
 }
@@ -45,7 +45,7 @@ export async function getUserById(id: string) {
 
   const usersCollection = db.collection<User>("users")
 
-  const user = await usersCollection.findOne({ _id: new ObjectId(id) }, { projection: { password: 0 } })
+  const user = await usersCollection.findOne({ _id: new ObjectId(id) }, { projection: { password: 0, pin: 0 } })
 
   return user
 }
