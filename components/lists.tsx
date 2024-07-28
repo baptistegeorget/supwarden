@@ -1,13 +1,16 @@
-"use client"
-
 import { Folder } from "@/types"
 import { WithId } from "mongodb"
 import { PrimaryButton, TertiaryButton } from "@/components/buttons"
-import { useState } from "react"
 
-export function FoldersList({ folders, onSelect }: { folders: WithId<Folder>[], onSelect: (folder: WithId<Folder>) => void }) {
-  const [selectedFolder, setSelectedFolder] = useState<WithId<Folder> | null>(null)
-
+export function FoldersList({
+  folders,
+  onSelect,
+  selectedFolder
+}: {
+  folders: WithId<Folder>[],
+  onSelect: (folder: WithId<Folder>) => void
+  selectedFolder: WithId<Folder> | null
+}) {
   return (
     <div className="flex flex-col gap-2 w-full">
       {folders.map((folder) => {
@@ -16,7 +19,6 @@ export function FoldersList({ folders, onSelect }: { folders: WithId<Folder>[], 
             <PrimaryButton
               key={folder._id.toString()}
               onClick={() => {
-                setSelectedFolder(folder)
                 onSelect(folder)
               }}
               justify="justify-start"
@@ -30,7 +32,6 @@ export function FoldersList({ folders, onSelect }: { folders: WithId<Folder>[], 
             <TertiaryButton
               key={folder._id.toString()}
               onClick={() => {
-                setSelectedFolder(folder)
                 onSelect(folder)
               }}
             >
