@@ -41,7 +41,8 @@ export async function POST(request: Request) {
     return Response.json(null, { status: 201 })
   } catch (error) {
     if (error instanceof ZodError) {
-      return Response.json({ error: error.errors }, { status: 400 })
+      const errorDetails = error.errors.map(e => e.message).join(", ")
+      return Response.json({ error: errorDetails }, { status: 400 })
     }
     if (error instanceof Error) {
       return Response.json({ error: error.message }, { status: 400 })
