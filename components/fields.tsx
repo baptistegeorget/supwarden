@@ -10,7 +10,7 @@ export function TextField({
   minLength,
   maxLength
 }: {
-  label: string,
+  label?: string,
   name: string,
   placeholder?: string,
   required?: boolean,
@@ -19,7 +19,7 @@ export function TextField({
 }) {
   return (
     <div className="flex flex-col gap-1 w-full">
-      <label>{required && "*"}{label}</label>
+      {label && <label>{required && "*"}{label}</label>}
       <input
         name={name}
         type="text"
@@ -39,14 +39,14 @@ export function EmailField({
   placeholder,
   required
 }: {
-  label: string,
+  label?: string,
   name: string,
   placeholder?: string,
   required?: boolean
 }) {
   return (
     <div className="flex flex-col gap-1 w-full">
-      <label>{required && "*"}{label}</label>
+      {label && <label>{required && "*"}{label}</label>}
       <input
         name={name}
         type="email"
@@ -66,7 +66,7 @@ export function PasswordField({
   minLength,
   maxLength
 }: {
-  label: string,
+  label?: string,
   name: string,
   placeholder?: string,
   required?: boolean,
@@ -81,7 +81,7 @@ export function PasswordField({
 
   return (
     <div className="flex flex-col gap-1 w-full">
-      <label>{required && "*"}{label}</label>
+      {label && <label>{required && "*"}{label}</label>}
       <div className="flex items-center relative">
         <input
           name={name}
