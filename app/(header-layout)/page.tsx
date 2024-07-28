@@ -47,14 +47,14 @@ export default function HomePage() {
   return (
     <>
       <div className="flex flex-1">
-        <aside className="w-1/4 border-r border-neutral-700 flex flex-col items-center py-4 px-8 gap-2">
+        <aside className="w-1/4 flex flex-col items-center py-4 px-8 gap-2 border-r border-neutral-700">
           <CreateFolderForm onSuccess={getFolders} />
           <FoldersList folders={folders} onSelect={(folder) => setSelectedFolder(folder)} selectedFolder={selectedFolder} />
         </aside>
-        <main className="flex-1 flex">
+        <main className="flex-1 flex flex-col items-center py-4 px-8 gap-2">
           {selectedFolder && <p>{selectedFolder.name}</p>}
         </main>
-        <aside className="w-1/4 border-l border-neutral-700 flex flex-col items-center py-4 px-8 gap-2">
+        <aside className="w-1/4 flex flex-col items-center py-4 px-8 gap-2 border-l border-neutral-700">
 
         </aside>
       </div>
