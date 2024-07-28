@@ -6,6 +6,8 @@ export type User = {
   email: string,
   password: string,
   pin?: string,
+  createdOn: string,
+  modifiedOn: string,
 }
 
 export type Folder = {

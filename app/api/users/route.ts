@@ -20,7 +20,9 @@ export async function POST(request: Request) {
       firstName: firstName,
       lastName: lastName,
       email: email,
-      password: hashPassword(password)
+      password: hashPassword(password),
+      createdOn: new Date().toISOString(),
+      modifiedOn: new Date().toISOString(),
     }
 
     const result = await createUser(user)
