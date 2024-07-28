@@ -36,6 +36,16 @@ export type Element = {
   modifiedOn: string,
 }
 
+export type Invitation = {
+  folder: ObjectId,
+  user: ObjectId,
+  state: "pending" | "accepted" | "rejected",
+  createdBy: ObjectId,
+  createdOn: string,
+  modifiedBy: ObjectId,
+  modifiedOn: string,
+}
+
 export type Session = {
   user: {
     id: string,
