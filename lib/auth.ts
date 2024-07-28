@@ -5,9 +5,12 @@ import { redirect } from "next/navigation"
 import { verify } from "@/lib/jwt"
 import { Session } from "@/types"
 
-export async function signIn(token: string) {
+export async function setAuthToken(token: string) {
   cookies().set("auth-token", token)
-  redirect("/")
+}
+
+export async function getAuthToken() {
+  return cookies().get("auth-token")?.value
 }
 
 export async function signOut() {

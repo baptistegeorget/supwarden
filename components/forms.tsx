@@ -2,9 +2,9 @@
 
 import { EmailField, PasswordField, TextField } from "@/components/fields"
 import { PrimaryButton } from "@/components/buttons"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { signIn } from "@/lib/auth"
+import { getAuthToken, setAuthToken } from "@/lib/auth"
 
 export function SignUpForm() {
   const router = useRouter()
@@ -117,7 +117,7 @@ export function SignInForm() {
 
     if (response.ok) {
       const result = await response.json()
-      await signIn(result.token)
+      await setAuthToken(result.token)
       router.push("/")
     } else {
       const result = await response.json()
@@ -146,6 +146,62 @@ export function SignInForm() {
       />
       <div>{errorMessage && <p className="text-red-500">{errorMessage}</p>}</div>
       <PrimaryButton justify="justify-center" type="submit">Sign in</PrimaryButton>
+    </form>
+  )
+}
+
+export function CreateFolderForm({ onSuccess }: { onSuccess: () => void }) {
+  const formRef = useRef<HTMLFormElement>(null)
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
+
+  async function handleAction(formData: FormData) {
+    setErrorMessage(undefined)
+
+    const data = {
+      name: formData.get("folderName") as string,
+    }
+
+    const authToken = await getAuthToken()
+
+    if (!authToken) {
+      return setErrorMessage("Unauthorized")
+    }
+
+    const response = await fetch("/api/folders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: authToken
+      },
+      body: JSON.stringify(data)
+    })
+
+    if (response.ok) {
+      formRef.current?.reset()
+      onSuccess()
+    } else {
+      const result = await response.json()
+      return setErrorMessage(result.error)
+    }
+  }
+
+  return (
+    <form
+      ref={formRef}
+      action={handleAction}
+      className="flex flex-col gap-2 w-full items-center"
+    >
+      <div className="flex gap-2">
+        <TextField
+          name="folderName"
+          placeholder="Enter folder name"
+          required
+          minLength={1}
+          maxLength={32}
+        />
+        <PrimaryButton justify="justify-center" type="submit">Add</PrimaryButton>
+      </div>
+      {errorMessage && <p className="text-red-500">{errorMessage}</p>}
     </form>
   )
 }
