@@ -59,7 +59,7 @@ export default function HomePage() {
           {selectedFolder && (
             <div className="flex gap-2 w-full justify-between">
               <Title>{selectedFolder.name}</Title>
-              <PrimaryButton onClick={() => setIsSendInvitationsPopupVisible(true)}>Share</PrimaryButton>
+              {selectedFolder.type === "shared" && <PrimaryButton onClick={() => setIsSendInvitationsPopupVisible(true)}>Share</PrimaryButton>}
             </div>
           )}
         </main>

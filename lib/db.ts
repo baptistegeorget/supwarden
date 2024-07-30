@@ -1,6 +1,6 @@
 import clientPromise from "@/lib/mongodb"
 import { Folder, Invitation, User } from "@/types"
-import { ObjectId } from "mongodb"
+import { ObjectId, WithId } from "mongodb"
 
 export async function checkEmailIsUsed(email: string) {
   const client = await clientPromise
@@ -113,4 +113,52 @@ export async function getUserByEmail(email: string) {
   const user = await usersCollection.findOne({ email }, { projection: { password: 0, pin: 0 } })
 
   return user
+}
+
+export async function getInvitationsByUserId(userId: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const invitationsCollection = db.collection<Invitation>("invitations")
+
+  const invitations = await invitationsCollection.find({ user: new ObjectId(userId) }).toArray()
+
+  return invitations
+}
+
+export async function getInvitationById(id: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const invitationsCollection = db.collection<Invitation>("invitations")
+
+  const invitation = await invitationsCollection.findOne({ _id: new ObjectId(id) })
+
+  return invitation
+}
+
+export async function updateInvitation(invitation: WithId<Invitation>) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const invitationsCollection = db.collection<Invitation>("invitations")
+
+  const result = await invitationsCollection.updateOne({ _id: invitation._id }, { $set: invitation })
+
+  return result
+}
+
+export async function updateFolder(folder: WithId<Folder>) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const foldersCollection = db.collection<Folder>("folders")
+
+  const result = await foldersCollection.updateOne({ _id: folder._id }, { $set: folder })
+
+  return result
 }

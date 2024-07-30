@@ -1,4 +1,4 @@
-import { object, string } from "zod"
+import { boolean, object, string } from "zod"
 
 export const signInSchema = object({
   email: string({ required_error: "Email is required" })
@@ -38,4 +38,10 @@ export const invitationSchema = object({
     .email("Invalid email"),
   folderId: string({ required_error: "Folder ID is required" })
     .min(1, "Folder ID is required"),
+})
+
+export const invitationResponseSchema = object({
+  invitationId: string({ required_error: "Invitation ID is required" })
+    .min(1, "Invitation ID is required"),
+  isAccepted: boolean({ required_error: "Response is required" }),
 })

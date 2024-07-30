@@ -20,6 +20,18 @@ export type Folder = {
   modifiedOn: string,
 }
 
+export type Invitation = {
+  folder: ObjectId,
+  user: ObjectId,
+  status: "pending" | "accepted" | "rejected",
+  createdBy: ObjectId,
+  createdOn: string,
+  modifiedBy: ObjectId,
+  modifiedOn: string,
+  senderName?: string,
+  folderName?: string,
+}
+
 export type Element = {
   folder: ObjectId,
   name: string,
@@ -30,16 +42,6 @@ export type Element = {
   customFields?: { type: "visible" | "hidden" | "attachment", value: string }[],
   usersWhoCanEdit?: ObjectId[],
   isSensitive?: boolean,
-  createdBy: ObjectId,
-  createdOn: string,
-  modifiedBy: ObjectId,
-  modifiedOn: string,
-}
-
-export type Invitation = {
-  folder: ObjectId,
-  user: ObjectId,
-  state: "pending" | "accepted" | "rejected",
   createdBy: ObjectId,
   createdOn: string,
   modifiedBy: ObjectId,
