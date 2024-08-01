@@ -1,4 +1,4 @@
-import { SignUpForm } from "@/components/forms"
+import SignUpForm from "@/components/sign-up-form"
 import { WebSiteTitle } from "@/components/miscellaneous"
 import { auth } from "@/lib/auth"
 import Link from "next/link"

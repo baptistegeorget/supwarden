@@ -1,7 +1,8 @@
 "use client"
 
 import { PrimaryButton } from "@/components/buttons"
-import { FolderForm } from "@/components/forms"
+import { ElementForm, FolderForm } from "@/components/forms"
+import { Header } from "@/components/header"
 import { FoldersList } from "@/components/lists"
 import { Title } from "@/components/miscellaneous"
 import { SendInvitationsPopup } from "@/components/popups"
@@ -50,21 +51,28 @@ export default function HomePage() {
 
   return (
     <>
+      <Header />
       <div className="flex flex-1">
         <aside className="w-1/4 flex flex-col items-center py-4 px-8 gap-2 border-r border-neutral-700">
           <FolderForm onSuccess={getFolders} />
           <FoldersList folders={folders} onSelect={(folder) => setSelectedFolder(folder)} selectedFolder={selectedFolder} />
         </aside>
         <main className="flex-1 flex flex-col items-center py-4 px-8 gap-2">
-          {selectedFolder && (
+          {selectedFolder ? (
             <div className="flex gap-2 w-full justify-between">
               <Title>{selectedFolder.name}</Title>
               {selectedFolder.type === "shared" && <PrimaryButton onClick={() => setIsSendInvitationsPopupVisible(true)}>Share</PrimaryButton>}
             </div>
+          ) : (
+            <div className="h-full flex items-center">
+              <p>Please select a folder.</p>
+            </div>
           )}
         </main>
         <aside className="w-1/4 flex flex-col items-center py-4 px-8 gap-2 border-l border-neutral-700">
-
+          {selectedFolder && (
+            <ElementForm onSuccess={getElements} folderId={selectedFolder._id.toString()} />
+          )}
         </aside>
       </div>
       {selectedFolder && (
