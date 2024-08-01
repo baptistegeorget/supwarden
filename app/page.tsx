@@ -1,7 +1,8 @@
 "use client"
 
-import { PrimaryButton } from "@/components/buttons"
-import { ElementForm, FolderForm } from "@/components/forms"
+import PrimaryButton from "@/components/buttons/primary"
+import ElementForm from "@/components/forms/element"
+import FolderForm from "@/components/forms/folder"
 import { Header } from "@/components/header"
 import { FoldersList } from "@/components/lists"
 import { Title } from "@/components/miscellaneous"

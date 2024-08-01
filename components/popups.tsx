@@ -1,7 +1,7 @@
 "use client"
 
-import { InvitationForm } from "@/components/forms"
-import { SecondaryButton } from "@/components/buttons"
+import InvitationForm from "@/components/forms/invitation"
+import SecondaryButton from "@/components/buttons/secondary"
 import { InvitationsList } from "@/components/lists"
 import { useEffect, useState } from "react"
 import { WithId } from "mongodb"

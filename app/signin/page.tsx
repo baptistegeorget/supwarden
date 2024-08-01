@@ -1,5 +1,5 @@
 import Link from "next/link"
-import SignInForm from "@/components/sign-in-form"
+import SignInForm from "@/components/forms/sign-in"
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { WebSiteTitle } from "@/components/miscellaneous"

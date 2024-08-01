@@ -3,8 +3,8 @@
 import { setAuthToken } from "@/lib/auth"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { EmailField, PasswordField } from "@/components/fields"
-import { PrimaryButton } from "@/components/buttons"
+import InputField from "@/components/fields/input"
+import PrimaryButton from "@/components/buttons/primary"
 
 export default function SignInForm() {
   const router = useRouter()
@@ -41,13 +41,15 @@ export default function SignInForm() {
       action={handleAction}
       className="flex flex-col gap-2 w-full items-center"
     >
-      <EmailField
+      <InputField
+        type="email"
         label="Email"
         name="email"
         placeholder="Enter your email"
         required
       />
-      <PasswordField
+      <InputField
+        type="password"
         label="Password"
         name="password"
         placeholder="Enter your password"

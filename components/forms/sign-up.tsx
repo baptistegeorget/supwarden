@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { EmailField, PasswordField, TextField } from "@/components/fields"
-import { PrimaryButton } from "@/components/buttons"
+import InputField from "@/components/fields/input"
+import PrimaryButton from "@/components/buttons/primary"
 
 export default function SignUpForm() {
   const router = useRouter()
@@ -50,7 +50,8 @@ export default function SignUpForm() {
       action={handleAction}
       className="flex flex-col gap-2 w-full items-center"
     >
-      <TextField
+      <InputField
+        type="text"
         label="First name"
         name="firstName"
         placeholder="Enter your first name"
@@ -58,7 +59,8 @@ export default function SignUpForm() {
         minLength={1}
         maxLength={32}
       />
-      <TextField
+      <InputField
+        type="text"
         label="Last name"
         name="lastName"
         placeholder="Enter your last name"
@@ -66,13 +68,15 @@ export default function SignUpForm() {
         minLength={1}
         maxLength={32}
       />
-      <EmailField
+      <InputField
+        type="email"
         label="Email"
         name="email"
         placeholder="Enter your email"
         required
       />
-      <PasswordField
+      <InputField
+        type="password"
         label="Password"
         name="password"
         placeholder="Enter your password"
@@ -80,7 +84,8 @@ export default function SignUpForm() {
         minLength={8}
         maxLength={32}
       />
-      <PasswordField
+      <InputField
+        type="password"
         label="Confirm password"
         name="passwordConfirmation"
         placeholder="Re-enter your password"

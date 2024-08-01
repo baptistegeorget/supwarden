@@ -1,6 +1,8 @@
 import { Folder, Invitation } from "@/types"
 import { WithId } from "mongodb"
-import { PrimaryButton, SecondaryButton, TertiaryButton } from "@/components/buttons"
+import PrimaryButton from "@/components/buttons/primary"
+import SecondaryButton from "@/components/buttons/secondary"
+import TertiaryButton from "@/components/buttons/tertiary"
 import { getAuthToken } from "@/lib/auth"
 
 export function FoldersList({
