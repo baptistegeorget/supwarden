@@ -1,3 +1,5 @@
+"use client"
+
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { EmailField, PasswordField, TextField } from "@/components/fields"
