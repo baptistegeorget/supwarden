@@ -2,7 +2,7 @@ import Link from "next/link"
 import SignInForm from "@/components/forms/sign-in"
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
-import { WebSiteTitle } from "@/components/miscellaneous"
+import WebSiteTitle from "@/components/texts/web-site-title"
 
 export default async function SignInPage() {
   const session = await auth()

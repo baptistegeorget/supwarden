@@ -1,6 +1,6 @@
 import SignUpForm from "@/components/forms/sign-up"
 
-import { WebSiteTitle } from "@/components/miscellaneous"
+import WebSiteTitle from "@/components/texts/web-site-title"
 import { auth } from "@/lib/auth"
 import Link from "next/link"
 import { redirect } from "next/navigation"

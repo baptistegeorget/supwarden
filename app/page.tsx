@@ -5,14 +5,17 @@ import ElementForm from "@/components/forms/element"
 import FolderForm from "@/components/forms/folder"
 import { Header } from "@/components/header"
 import { FoldersList } from "@/components/lists"
-import { Title } from "@/components/miscellaneous"
+import Title from "@/components/texts/title"
 import { SendInvitationsPopup } from "@/components/popups"
-import { getAuthToken } from "@/lib/auth"
-import { Folder, Element } from "@/types"
+import { auth, getAuthToken } from "@/lib/auth"
+import { Folder, Element, Session } from "@/types"
 import { WithId } from "mongodb"
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 
 export default function HomePage() {
+  const router = useRouter()
+  const [session, setSession] = useState<Session | null>(null)
   const [folders, setFolders] = useState<WithId<Folder>[]>([])
   const [selectedFolder, setSelectedFolder] = useState<WithId<Folder> | null>(null)
   const [elements, setElements] = useState<WithId<Element>[]>([])
@@ -20,8 +23,14 @@ export default function HomePage() {
   const [isSendInvitationsPopupVisible, setIsSendInvitationsPopupVisible] = useState(false)
 
   useEffect(() => {
+    getSession()
     getFolders()
   }, [])
+
+  async function getSession() {
+    const session = await auth()
+    setSession(session)
+  }
 
   async function getFolders() {
     const authToken = await getAuthToken()
@@ -50,9 +59,13 @@ export default function HomePage() {
 
   }
 
+  if (!session) {
+    return null
+  }
+
   return (
     <>
-      <Header />
+      <Header session={session} />
       <div className="flex flex-1">
         <aside className="w-1/4 flex flex-col items-center py-4 px-8 gap-2 border-r border-neutral-700">
           <FolderForm onSuccess={getFolders} />
