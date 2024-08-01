@@ -5,7 +5,6 @@ import ElementForm from "@/components/forms/element"
 import FolderForm from "@/components/forms/folder"
 import { Header } from "@/components/header"
 import { FoldersList } from "@/components/lists"
-import Title from "@/components/texts/title"
 import { SendInvitationsPopup } from "@/components/popups"
 import { auth, getAuthToken } from "@/lib/auth"
 import { Folder, Element, Session } from "@/types"
@@ -74,7 +73,7 @@ export default function HomePage() {
         <main className="flex-1 flex flex-col items-center py-4 px-8 gap-2">
           {selectedFolder ? (
             <div className="flex gap-2 w-full justify-between">
-              <Title>{selectedFolder.name}</Title>
+              <h2  className="text-xl font-bold">{selectedFolder.name}</h2>
               {selectedFolder.type === "shared" && <PrimaryButton onClick={() => setIsSendInvitationsPopupVisible(true)}>Share</PrimaryButton>}
             </div>
           ) : (

@@ -1,4 +1,3 @@
-import WebSiteTitle from "@/components/texts/web-site-title"
 import Link from "next/link"
 import SignOutButton from "@/components/buttons/sign-out"
 import NotificationButton from "@/components/buttons/notification"
@@ -7,7 +6,7 @@ import { Session } from "@/types"
 export function Header({ session }: { session: Session }) {
   return (
     <header className="h-20 flex border-b border-neutral-700 items-center px-20 justify-between">
-      <WebSiteTitle>SUPWARDEN</WebSiteTitle>
+      <h1  className="text-center text-2xl font-bold">SUPWARDEN</h1>
       <div className="flex gap-2">
         <span>{session?.user.name}</span>
         <SignOutButton />
