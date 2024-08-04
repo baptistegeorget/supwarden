@@ -1,16 +1,17 @@
 "use client"
 
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import InputField from "@/components/fields/input"
 import PrimaryButton from "@/components/buttons/primary"
 
 export default function SignUpForm() {
-  const router = useRouter()
+  const formRef = useRef<HTMLFormElement>(null)
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
+  const [successMessage, setSuccessMessage] = useState<string | undefined>(undefined)
 
-  async function handleAction(formData: FormData) {
+  async function handleFormAction(formData: FormData) {
     setErrorMessage(undefined)
+    setSuccessMessage(undefined)
 
     const data = {
       firstName: formData.get("firstName") as string,
@@ -38,16 +39,18 @@ export default function SignUpForm() {
     })
 
     if (response.ok) {
-      router.push("/signin")
+      formRef.current?.reset()
+      return setSuccessMessage("Account created successfully")
     } else {
-      const result = await response.json()
-      return setErrorMessage(result.error)
+      const { error } = await response.json()
+      return setErrorMessage(error)
     }
   }
 
   return (
     <form
-      action={handleAction}
+      ref={formRef}
+      action={handleFormAction}
       className="flex flex-col gap-2 w-full items-center"
     >
       <InputField
@@ -94,6 +97,7 @@ export default function SignUpForm() {
         maxLength={32}
       />
       <div>{errorMessage && <p className="text-red-500">{errorMessage}</p>}</div>
+      <div>{successMessage && <p className="text-green-500">{successMessage}</p>}</div>
       <PrimaryButton justify="justify-center" type="submit">Sign up</PrimaryButton>
     </form>
   )
