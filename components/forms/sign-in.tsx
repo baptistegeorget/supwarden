@@ -1,44 +1,27 @@
 "use client"
 
-import { setAuthToken } from "@/lib/auth"
-import { useRouter } from "next/navigation"
+import { signIn } from "@/lib/auth"
 import { useState } from "react"
 import InputField from "@/components/fields/input"
 import PrimaryButton from "@/components/buttons/primary"
 
 export default function SignInForm() {
-  const router = useRouter()
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
 
-  async function handleAction(formData: FormData) {
-    setErrorMessage(undefined)
-
-    const data = {
-      email: formData.get("email") as string,
-      password: formData.get("password") as string,
-    }
-
-    const response = await fetch("/api/auth", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data)
-    })
-
-    if (response.ok) {
-      const result = await response.json()
-      await setAuthToken(result.token)
-      router.push("/")
-    } else {
-      const result = await response.json()
-      return setErrorMessage(result.error)
+  async function handleFormAction(formData: FormData) {
+    try {
+      setErrorMessage(undefined)
+      await signIn(formData)
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message)
+      }
     }
   }
 
   return (
     <form
-      action={handleAction}
+      action={handleFormAction}
       className="flex flex-col gap-2 w-full items-center"
     >
       <InputField
