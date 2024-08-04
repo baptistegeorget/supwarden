@@ -23,8 +23,7 @@ export default function TextAreaField({
         required={required}
         minLength={minLength}
         maxLength={maxLength}
-      >
-      </textarea>
+      />
     </div>
   )
 }
