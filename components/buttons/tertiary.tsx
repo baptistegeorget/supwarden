@@ -1,3 +1,5 @@
+"use client"
+
 export default function TertiaryButton({
   children,
   onClick,
@@ -6,7 +8,7 @@ export default function TertiaryButton({
 }: {
   children?: React.ReactNode,
   onClick?: () => void,
-  justify?: "justify-center" | "justify-start" | "justify-end",
+  justify?: "justify-center" | "justify-start" | "justify-end" | "justify-between" | "justify-around" | "justify-evenly",
   type?: "submit" | "button"
 }) {
   return (
