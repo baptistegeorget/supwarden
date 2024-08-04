@@ -2,6 +2,7 @@ import { createFolder, getFoldersByUserId, getUserById } from "@/lib/db"
 import { verify } from "@/lib/jwt"
 import { folderSchema } from "@/lib/zod"
 import { Folder, Session } from "@/types"
+import { ObjectId } from "mongodb"
 import { cookies } from "next/headers"
 import { ZodError } from "zod"
 
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
 
     const session = verify<Session>(authToken)
 
-    const user = await getUserById(session.user.id)
+    const user = await getUserById(new ObjectId(session.user.id))
 
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 })
@@ -28,10 +29,10 @@ export async function POST(request: Request) {
     const folder: Folder = {
       name: name,
       type: "shared",
-      members: [],
-      createdBy: user._id,
+      memberIds: [],
+      creatorId: user._id,
       createdOn: new Date().toISOString(),
-      modifiedBy: user._id,
+      modifierId: user._id,
       modifiedOn: new Date().toISOString(),
     }
 
@@ -60,13 +61,13 @@ export async function GET() {
 
     const session = verify<Session>(authToken)
 
-    const user = await getUserById(session.user.id)
+    const user = await getUserById(new ObjectId(session.user.id))
 
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const folders = await getFoldersByUserId(user._id.toString())
+    const folders = await getFoldersByUserId(user._id)
 
     return Response.json({ folders }, { status: 200 })
   } catch (error) {

@@ -30,9 +30,9 @@ export async function POST(request: Request) {
     const folder: Folder = {
       name: "Personal",
       type: "personal",
-      createdBy: result.insertedId,
+      creatorId: result.insertedId,
       createdOn: new Date().toISOString(),
-      modifiedBy: result.insertedId,
+      modifierId: result.insertedId,
       modifiedOn: new Date().toISOString(),
     }
 
