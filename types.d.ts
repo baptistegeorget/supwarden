@@ -1,50 +1,60 @@
 import { ObjectId } from "mongodb"
 
+// Table
 export type User = {
+  // Properties
   lastName: string,
   firstName: string,
   email: string,
   password: string,
   pin?: string,
+  // Metadata
   createdOn: string,
   modifiedOn: string,
 }
 
+// Table
 export type Folder = {
+  // Properties
   name: string,
   type: "personal" | "shared",
-  members?: ObjectId[],
-  createdBy: ObjectId,
+  memberIds?: ObjectId[],
+  // Metadata
+  creatorId: ObjectId,
   createdOn: string,
-  modifiedBy: ObjectId,
+  modifierId: ObjectId,
   modifiedOn: string,
 }
 
-export type Invitation = {
-  folder: ObjectId,
-  user: ObjectId,
-  status: "pending" | "accepted" | "rejected",
-  createdBy: ObjectId,
-  createdOn: string,
-  modifiedBy: ObjectId,
-  modifiedOn: string,
-  senderName?: string,
-  folderName?: string,
-}
-
+// Table
 export type Element = {
-  folder: ObjectId,
+  // Properties
+  folderId: ObjectId,
   name: string,
   identifier?: string,
   password?: string,
   urls?: string[],
   note?: string,
   customFields?: { type: "visible" | "hidden" | "attachment", value: string }[],
-  usersWhoCanEdit?: ObjectId[],
+  IdsOfMembersWhoCanEdit?: ObjectId[],
   isSensitive?: boolean,
-  createdBy: ObjectId,
+  // Metadata
+  creatorId: ObjectId,
   createdOn: string,
-  modifiedBy: ObjectId,
+  modifierId: ObjectId,
+  modifiedOn: string,
+}
+
+// Table
+export type Invitation = {
+  // Properties
+  folderId: ObjectId,
+  userId: ObjectId,
+  status: "pending" | "accepted" | "rejected",
+  // Metadata
+  creatorId: ObjectId,
+  createdOn: string,
+  modifierId: ObjectId,
   modifiedOn: string,
 }
 
