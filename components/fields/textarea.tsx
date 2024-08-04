@@ -4,16 +4,14 @@ export default function TextAreaField({
   placeholder,
   required,
   minLength,
-  maxLength,
-  value
+  maxLength
 }: {
   label?: string,
   name: string,
   placeholder?: string,
   required?: boolean,
   minLength?: number,
-  maxLength?: number,
-  value?: string
+  maxLength?: number
 }) {
   return (
     <div className="flex flex-col gap-1 w-full">
@@ -26,7 +24,6 @@ export default function TextAreaField({
         minLength={minLength}
         maxLength={maxLength}
       >
-        {value}
       </textarea>
     </div>
   )
