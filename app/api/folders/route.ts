@@ -1,7 +1,7 @@
 import { createFolder, getFoldersByUserId, getUserById } from "@/lib/db"
 import { verify } from "@/lib/jwt"
 import { folderSchema } from "@/lib/zod"
-import { Folder, Session } from "@/types"
+import { FolderModel, Folder, Session, UserModel, User } from "@/types"
 import { ObjectId } from "mongodb"
 import { cookies } from "next/headers"
 import { ZodError } from "zod"
@@ -26,10 +26,10 @@ export async function POST(request: Request) {
 
     const { name } = await folderSchema.parseAsync(body)
 
-    const folder: Folder = {
+    const folder: FolderModel = {
       name: name,
       type: "shared",
-      memberIds: [],
+      memberIds: [user._id.toString()],
       creatorId: user._id,
       createdOn: new Date().toISOString(),
       modifierId: user._id,
@@ -69,7 +69,61 @@ export async function GET() {
 
     const folders = await getFoldersByUserId(user._id)
 
-    return Response.json({ folders }, { status: 200 })
+    const foldersResponse: Folder[] = []
+
+    for (const folder of folders) {
+      const members: User[] = []
+
+      for (const memberId of folder.memberIds) {
+        const member = await getUserById(new ObjectId(memberId))
+
+        if (member) {
+          const memberResponse: User = {
+            id: member._id.toString(),
+            lastName: member.lastName,
+            firstName: member.firstName,
+            email: member.email,
+            createdOn: member.createdOn,
+            modifiedOn: member.modifiedOn
+          }
+          members.push(memberResponse)
+        }
+      }
+
+      const creator = await getUserById(folder.creatorId)
+
+      const modifier = await getUserById(folder.modifierId)
+
+      if (creator && modifier) {
+        const folderResponse: Folder = {
+          id: folder._id.toString(),
+          name: folder.name,
+          type: folder.type,
+          members: members,
+          creator: {
+            id: creator?._id.toString(),
+            lastName: creator?.lastName,
+            firstName: creator?.firstName,
+            email: creator?.email,
+            createdOn: creator?.createdOn,
+            modifiedOn: creator?.modifiedOn
+          },
+          createdOn: folder.createdOn,
+          modifier: {
+            id: modifier?._id.toString(),
+            lastName: modifier?.lastName,
+            firstName: modifier?.firstName,
+            email: modifier?.email,
+            createdOn: modifier?.createdOn,
+            modifiedOn: modifier?.modifiedOn
+          },
+          modifiedOn: folder.modifiedOn
+        }
+        foldersResponse.push(folderResponse)
+      }
+    }
+
+    return Response.json({ folders: foldersResponse }, { status: 200 })
   } catch (error) {
     if (error instanceof Error) {
       return Response.json({ error: error.message }, { status: 400 })

@@ -1,5 +1,5 @@
 import clientPromise from "@/lib/mongodb"
-import { Folder, Invitation, User } from "@/types"
+import { FolderModel, InvitationModel, Session, UserModel } from "@/types"
 import { ObjectId, WithId } from "mongodb"
 
 // Checks
@@ -9,7 +9,7 @@ export async function checkEmailIsUsed(email: string) {
 
   const db = client.db()
 
-  const usersCollection = db.collection<User>("users")
+  const usersCollection = db.collection<UserModel>("users")
 
   const user = await usersCollection.findOne({ email })
 
@@ -21,7 +21,7 @@ export async function checkInvitationExist(userId: ObjectId, folderId: ObjectId,
 
   const db = client.db()
 
-  const invitationsCollection = db.collection<Invitation>("invitations")
+  const invitationsCollection = db.collection<InvitationModel>("invitations")
 
   const invitation = await invitationsCollection.findOne({ userId, folderId, ...(status ? { status } : {}) })
 
@@ -30,36 +30,36 @@ export async function checkInvitationExist(userId: ObjectId, folderId: ObjectId,
 
 // Creations
 
-export async function createUser(user: User) {
+export async function createUser(user: UserModel) {
   const client = await clientPromise
 
   const db = client.db()
 
-  const usersCollection = db.collection<User>("users")
+  const usersCollection = db.collection<UserModel>("users")
 
   const result = await usersCollection.insertOne(user)
 
   return result
 }
 
-export async function createFolder(folder: Folder) {
+export async function createFolder(folder: FolderModel) {
   const client = await clientPromise
 
   const db = client.db()
 
-  const foldersCollection = db.collection<Folder>("folders")
+  const foldersCollection = db.collection<FolderModel>("folders")
 
   const result = await foldersCollection.insertOne(folder)
 
   return result
 }
 
-export async function createInvitation(invitation: Invitation) {
+export async function createInvitation(invitation: InvitationModel) {
   const client = await clientPromise
 
   const db = client.db()
 
-  const invitationsCollection = db.collection<Invitation>("invitations")
+  const invitationsCollection = db.collection<InvitationModel>("invitations")
 
   const result = await invitationsCollection.insertOne(invitation)
 
@@ -68,36 +68,36 @@ export async function createInvitation(invitation: Invitation) {
 
 // Updates
 
-export async function updateUser(user: WithId<User>) {
+export async function updateUser(user: WithId<UserModel>) {
   const client = await clientPromise
 
   const db = client.db()
 
-  const usersCollection = db.collection<User>("users")
+  const usersCollection = db.collection<UserModel>("users")
 
   const result = await usersCollection.updateOne({ _id: user._id }, { $set: user })
 
   return result
 }
 
-export async function updateFolder(folder: WithId<Folder>) {
+export async function updateFolder(folder: WithId<FolderModel>) {
   const client = await clientPromise
 
   const db = client.db()
 
-  const foldersCollection = db.collection<Folder>("folders")
+  const foldersCollection = db.collection<FolderModel>("folders")
 
   const result = await foldersCollection.updateOne({ _id: folder._id }, { $set: folder })
 
   return result
 }
 
-export async function updateInvitation(invitation: WithId<Invitation>) {
+export async function updateInvitation(invitation: WithId<InvitationModel>) {
   const client = await clientPromise
 
   const db = client.db()
 
-  const invitationsCollection = db.collection<Invitation>("invitations")
+  const invitationsCollection = db.collection<InvitationModel>("invitations")
 
   const result = await invitationsCollection.updateOne({ _id: invitation._id }, { $set: invitation })
 
@@ -111,9 +111,9 @@ export async function getUserByCredentials(email: string, password: string) {
 
   const db = client.db()
 
-  const usersCollection = db.collection<User>("users")
+  const usersCollection = db.collection<UserModel>("users")
 
-  const user = await usersCollection.findOne({ email, password }, { projection: { password: 0, pin: 0 } })
+  const user = await usersCollection.findOne({ email, password, status: "active" }, { projection: { password: 0, pin: 0 } })
 
   return user
 }
@@ -123,7 +123,7 @@ export async function getUserById(id: ObjectId) {
 
   const db = client.db()
 
-  const usersCollection = db.collection<User>("users")
+  const usersCollection = db.collection<UserModel>("users")
 
   const user = await usersCollection.findOne({ _id: id }, { projection: { password: 0, pin: 0 } })
 
@@ -135,14 +135,9 @@ export async function getFoldersByUserId(id: ObjectId) {
 
   const db = client.db()
 
-  const foldersCollection = db.collection<Folder>("folders")
+  const foldersCollection = db.collection<FolderModel>("folders")
 
-  const folders = await foldersCollection.find({
-    $or: [
-      { creatorId: id },
-      { memberIds: { $in: [id] } }
-    ]
-  }).toArray()
+  const folders = await foldersCollection.find({ memberIds: { $in: [id.toString()] } }).toArray()
 
   return folders
 }
@@ -152,7 +147,7 @@ export async function getFolderById(id: ObjectId) {
 
   const db = client.db()
 
-  const foldersCollection = db.collection<Folder>("folders")
+  const foldersCollection = db.collection<FolderModel>("folders")
 
   const folder = await foldersCollection.findOne({ _id: id })
 
@@ -164,7 +159,7 @@ export async function getUserByEmail(email: string) {
 
   const db = client.db()
 
-  const usersCollection = db.collection<User>("users")
+  const usersCollection = db.collection<UserModel>("users")
 
   const user = await usersCollection.findOne({ email }, { projection: { password: 0, pin: 0 } })
 
@@ -176,7 +171,7 @@ export async function getInvitationsByUserId(id: ObjectId) {
 
   const db = client.db()
 
-  const invitationsCollection = db.collection<Invitation>("invitations")
+  const invitationsCollection = db.collection<InvitationModel>("invitations")
 
   const invitations = await invitationsCollection.find({ userId: id }).toArray()
 
@@ -188,7 +183,7 @@ export async function getInvitationById(id: ObjectId) {
 
   const db = client.db()
 
-  const invitationsCollection = db.collection<Invitation>("invitations")
+  const invitationsCollection = db.collection<InvitationModel>("invitations")
 
   const invitation = await invitationsCollection.findOne({ _id: id })
 

@@ -1,24 +1,23 @@
 import { ObjectId } from "mongodb"
 
-// Table
-export type User = {
+export type UserModel = {
   // Properties
   lastName: string,
   firstName: string,
   email: string,
   password: string,
   pin?: string,
+  status: "active" | "deleted",
   // Metadata
   createdOn: string,
   modifiedOn: string,
 }
 
-// Table
-export type Folder = {
+export type FolderModel = {
   // Properties
   name: string,
   type: "personal" | "shared",
-  memberIds?: ObjectId[],
+  memberIds: string[],
   // Metadata
   creatorId: ObjectId,
   createdOn: string,
@@ -26,27 +25,7 @@ export type Folder = {
   modifiedOn: string,
 }
 
-// Table
-export type Element = {
-  // Properties
-  folderId: ObjectId,
-  name: string,
-  identifier?: string,
-  password?: string,
-  urls?: string[],
-  note?: string,
-  customFields?: { type: "visible" | "hidden" | "attachment", value: string }[],
-  IdsOfMembersWhoCanEdit?: ObjectId[],
-  isSensitive?: boolean,
-  // Metadata
-  creatorId: ObjectId,
-  createdOn: string,
-  modifierId: ObjectId,
-  modifiedOn: string,
-}
-
-// Table
-export type Invitation = {
+export type InvitationModel = {
   // Properties
   folderId: ObjectId,
   userId: ObjectId,
@@ -58,10 +37,56 @@ export type Invitation = {
   modifiedOn: string,
 }
 
+export type ElementModel = {
+  // Properties
+  folderId: ObjectId,
+  name: string,
+  identifier?: string,
+  password?: string,
+  urls?: string[],
+  note?: string,
+  customFields?: { type: "visible" | "hidden" | "attachment", value: string }[],
+  idsOfMembersWhoCanEdit?: string[],
+  isSensitive?: boolean,
+  // Metadata
+  creatorId: ObjectId,
+  createdOn: string,
+  modifierId: ObjectId,
+  modifiedOn: string,
+}
+
 export type Session = {
-  user: {
-    id: string,
-    email: string,
-    name: string,
-  }
+  user: User,
+  date: string,
+}
+
+export type User = {
+  id: string,
+  lastName: string,
+  firstName: string,
+  email: string,
+  createdOn: string,
+  modifiedOn: string,
+}
+
+export type Folder = {
+  id: string,
+  name: string,
+  type: "personal" | "shared",
+  members: User[],
+  creator: User,
+  createdOn: string,
+  modifier: User,
+  modifiedOn: string,
+}
+
+export type Invitation = {
+  id: string,
+  folder: Folder,
+  user: User,
+  status: "pending" | "accepted" | "rejected",
+  creator: User,
+  createdOn: string,
+  modifier: User,
+  modifiedOn: string,
 }

@@ -2,7 +2,7 @@ import { signUpSchema } from "@/lib/zod"
 import { checkEmailIsUsed, createFolder, createUser } from "@/lib/db"
 import { hashPassword } from "@/lib/password"
 import { ZodError } from "zod"
-import { Folder, User } from "@/types"
+import { FolderModel, UserModel } from "@/types"
 
 export async function POST(request: Request) {
   try {
@@ -16,20 +16,22 @@ export async function POST(request: Request) {
       return Response.json({ error: "Email is already used" }, { status: 400 })
     }
 
-    const user: User = {
+    const user: UserModel = {
       firstName: firstName,
       lastName: lastName,
       email: email,
       password: hashPassword(password),
+      status: "active",
       createdOn: new Date().toISOString(),
       modifiedOn: new Date().toISOString(),
     }
 
     const result = await createUser(user)
 
-    const folder: Folder = {
+    const folder: FolderModel = {
       name: "Personal",
       type: "personal",
+      memberIds: [result.insertedId.toString()],
       creatorId: result.insertedId,
       createdOn: new Date().toISOString(),
       modifierId: result.insertedId,

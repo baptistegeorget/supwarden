@@ -23,8 +23,12 @@ export async function POST(request: Request) {
       user: {
         id: user._id.toString(),
         email: user.email,
-        name: user.firstName + " " + user.lastName,
-      }
+        firstName: user.firstName,
+        lastName: user.lastName,
+        createdOn: user.createdOn,
+        modifiedOn: user.modifiedOn,
+      },
+      date: new Date().toISOString(),
     }
 
     const token = sign(session)

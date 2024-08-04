@@ -26,7 +26,7 @@ export async function signIn(formData: FormData) {
   })
 
   if (response.ok) {
-    const { token } = await response.json()
+    const { token }: { token: string } = await response.json()
     cookies().set("auth-token", token)
     redirect("/")
   } else {
