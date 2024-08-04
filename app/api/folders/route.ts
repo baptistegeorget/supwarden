@@ -2,11 +2,12 @@ import { createFolder, getFoldersByUserId, getUserById } from "@/lib/db"
 import { verify } from "@/lib/jwt"
 import { folderSchema } from "@/lib/zod"
 import { Folder, Session } from "@/types"
+import { cookies } from "next/headers"
 import { ZodError } from "zod"
 
 export async function POST(request: Request) {
   try {
-    const authToken = request.headers.get("Authorization")
+    const authToken = cookies().get("auth-token")?.value
 
     if (!authToken) {
       return Response.json({ error: "Unauthorized" }, { status: 401 })
@@ -48,9 +49,9 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const authToken = request.headers.get("Authorization")
+    const authToken = cookies().get("auth-token")?.value
 
     if (!authToken) {
       return Response.json({ error: "Unauthorized" }, { status: 401 })
