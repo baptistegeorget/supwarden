@@ -19,14 +19,16 @@ export async function POST(request: Request) {
       return Response.json({ error: "Invalid credentials" }, { status: 400 })
     }
 
+    if (user.status === "deleted") {
+      return Response.json({ error: "User is deleted" }, { status: 400 })
+    }
+
     const session: Session = {
       user: {
         id: user._id.toString(),
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        createdOn: user.createdOn,
-        modifiedOn: user.modifiedOn,
       },
       date: new Date().toISOString(),
     }

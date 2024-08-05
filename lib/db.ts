@@ -113,7 +113,7 @@ export async function getUserByCredentials(email: string, password: string) {
 
   const usersCollection = db.collection<UserModel>("users")
 
-  const user = await usersCollection.findOne({ email, password, status: "active" }, { projection: { password: 0, pin: 0 } })
+  const user = await usersCollection.findOne({ email, password }, { projection: { password: 0, pin: 0 } })
 
   return user
 }

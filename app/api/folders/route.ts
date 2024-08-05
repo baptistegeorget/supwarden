@@ -69,59 +69,41 @@ export async function GET() {
 
     const folders = await getFoldersByUserId(user._id)
 
-    const foldersResponse: Folder[] = []
-
-    for (const folder of folders) {
-      const members: User[] = []
-
-      for (const memberId of folder.memberIds) {
-        const member = await getUserById(new ObjectId(memberId))
-
-        if (member) {
-          const memberResponse: User = {
-            id: member._id.toString(),
-            lastName: member.lastName,
-            firstName: member.firstName,
-            email: member.email,
-            createdOn: member.createdOn,
-            modifiedOn: member.modifiedOn
-          }
-          members.push(memberResponse)
-        }
-      }
+    const foldersResponse: Folder[] = await Promise.all(folders.map(async (folder) => {
+      const members = await Promise.all(folder.memberIds.map(async (memberId) => await getUserById(new ObjectId(memberId))))
 
       const creator = await getUserById(folder.creatorId)
 
       const modifier = await getUserById(folder.modifierId)
 
-      if (creator && modifier) {
-        const folderResponse: Folder = {
-          id: folder._id.toString(),
-          name: folder.name,
-          type: folder.type,
-          members: members,
-          creator: {
-            id: creator?._id.toString(),
-            lastName: creator?.lastName,
-            firstName: creator?.firstName,
-            email: creator?.email,
-            createdOn: creator?.createdOn,
-            modifiedOn: creator?.modifiedOn
-          },
-          createdOn: folder.createdOn,
-          modifier: {
-            id: modifier?._id.toString(),
-            lastName: modifier?.lastName,
-            firstName: modifier?.firstName,
-            email: modifier?.email,
-            createdOn: modifier?.createdOn,
-            modifiedOn: modifier?.modifiedOn
-          },
-          modifiedOn: folder.modifiedOn
-        }
-        foldersResponse.push(folderResponse)
+      const folderResponse: Folder = {
+        id: folder._id.toString(),
+        name: folder.name,
+        type: folder.type,
+        members: members.map(member => member ? {
+          id: member._id.toString(),
+          lastName: member.lastName,
+          firstName: member.firstName,
+          email: member.email,
+        } : null),
+        creator: creator ? {
+          id: creator._id.toString(),
+          lastName: creator.lastName,
+          firstName: creator.firstName,
+          email: creator.email,
+        } : null,
+        createdOn: folder.createdOn,
+        modifier: modifier ? {
+          id: modifier._id.toString(),
+          lastName: modifier.lastName,
+          firstName: modifier.firstName,
+          email: modifier.email,
+        } : null,
+        modifiedOn: folder.modifiedOn
       }
-    }
+
+      return folderResponse
+    }))
 
     return Response.json({ folders: foldersResponse }, { status: 200 })
   } catch (error) {

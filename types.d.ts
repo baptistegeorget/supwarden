@@ -56,7 +56,7 @@ export type ElementModel = {
 }
 
 export type Session = {
-  user: User,
+  user: { id: string, lastName: string, firstName: string, email: string },
   date: string,
 }
 
@@ -73,20 +73,20 @@ export type Folder = {
   id: string,
   name: string,
   type: "personal" | "shared",
-  members: User[],
-  creator: User,
+  members: ({ id: string, lastName: string, firstName: string, email: string } | null)[],
+  creator: { id: string, lastName: string, firstName: string, email: string } | null,
   createdOn: string,
-  modifier: User,
+  modifier: { id: string, lastName: string, firstName: string, email: string } | null,
   modifiedOn: string,
 }
 
 export type Invitation = {
   id: string,
-  folder: Folder,
-  user: User,
+  folder: { id: string, name: string } | null,
+  user: { id: string, lastName: string, firstName: string, email: string } | null,
   status: "pending" | "accepted" | "rejected",
-  creator: User,
+  creator: { id: string, lastName: string, firstName: string, email: string } | null,
   createdOn: string,
-  modifier: User,
+  modifier: { id: string, lastName: string, firstName: string, email: string } | null,
   modifiedOn: string,
 }
