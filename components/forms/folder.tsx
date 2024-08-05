@@ -11,9 +11,11 @@ export default function FolderForm({
 }) {
   const formRef = useRef<HTMLFormElement>(null)
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
+  const [successMessage, setSuccessMessage] = useState<string | undefined>(undefined)
 
   async function handleFormAction(formData: FormData) {
     setErrorMessage(undefined)
+    setSuccessMessage(undefined)
 
     const data = {
       name: formData.get("name") as string,
@@ -29,6 +31,7 @@ export default function FolderForm({
 
     if (response.ok) {
       formRef.current?.reset()
+      setSuccessMessage("Folder added successfully")
       onSuccess()
     } else {
       const { error } = await response.json()
@@ -54,6 +57,7 @@ export default function FolderForm({
         <PrimaryButton justify="justify-center" type="submit">Add</PrimaryButton>
       </div>
       <div>{errorMessage && <p className="text-red-500">{errorMessage}</p>}</div>
+      <div>{successMessage && <p className="text-green-500">{successMessage}</p>}</div>
     </form>
   )
 }
