@@ -41,7 +41,5 @@ export const invitationSchema = object({
 })
 
 export const invitationResponseSchema = object({
-  invitationId: string({ required_error: "Invitation ID is required" })
-    .min(1, "Invitation ID is required"),
   isAccepted: boolean({ required_error: "Response is required" }),
 })

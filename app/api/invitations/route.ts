@@ -1,8 +1,7 @@
-import { createInvitation, getFolderById, getInvitationsByUserId, getUserByEmail, getUserById, getInvitationById, updateInvitation, updateFolder, checkInvitationExist } from "@/lib/db"
+import { createInvitation, getFolderById, getPendingInvitationsByUserId, getUserByEmail, getUserById, checkPendingInvitationExist } from "@/lib/db"
 import { verify } from "@/lib/jwt"
-import { invitationResponseSchema, invitationSchema } from "@/lib/zod"
+import { invitationSchema } from "@/lib/zod"
 import { Invitation, InvitationModel, Session } from "@/types"
-import { ObjectId } from "mongodb"
 import { cookies } from "next/headers"
 import { ZodError } from "zod"
 
@@ -16,7 +15,7 @@ export async function POST(request: Request) {
 
     const session = verify<Session>(authToken)
 
-    const user = await getUserById(new ObjectId(session.user.id))
+    const user = await getUserById(session.user.id)
 
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 })
@@ -36,7 +35,7 @@ export async function POST(request: Request) {
       return Response.json({ error: "You can't invite yourself" }, { status: 400 })
     }
 
-    const folder = await getFolderById(new ObjectId(folderId))
+    const folder = await getFolderById(folderId)
 
     if (!folder) {
       return Response.json({ error: "Folder not found" }, { status: 404 })
@@ -50,7 +49,7 @@ export async function POST(request: Request) {
       return Response.json({ error: "User is already a member of this folder" }, { status: 400 })
     }
 
-    const invitationExist = await checkInvitationExist(userToInvite._id, folder._id, "pending")
+    const invitationExist = await checkPendingInvitationExist(userToInvite._id.toString(), folder._id.toString())
 
     if (invitationExist) {
       return Response.json({ error: "Invitation already sent" }, { status: 400 })
@@ -91,22 +90,22 @@ export async function GET() {
 
     const session = verify<Session>(authToken)
 
-    const user = await getUserById(new ObjectId(session.user.id))
+    const user = await getUserById(session.user.id)
 
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const invitations = await getInvitationsByUserId(user._id, "pending")
+    const invitations = await getPendingInvitationsByUserId(user._id.toString())
 
     const invitationsResponse: Invitation[] = await Promise.all(invitations.map(async (invitation) => {
-      const folder = await getFolderById(invitation.folderId)
+      const folder = await getFolderById(invitation.folderId.toString())
 
-      const user = await getUserById(invitation.userId)
+      const user = await getUserById(invitation.userId.toString())
 
-      const creator = await getUserById(invitation.creatorId)
+      const creator = await getUserById(invitation.creatorId.toString())
 
-      const modifier = await getUserById(invitation.modifierId)
+      const modifier = await getUserById(invitation.modifierId.toString())
       
       const invitationResponse: Invitation = {
         id: invitation._id.toString(),

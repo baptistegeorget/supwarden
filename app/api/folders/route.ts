@@ -1,8 +1,7 @@
 import { createFolder, getFoldersByUserId, getUserById } from "@/lib/db"
 import { verify } from "@/lib/jwt"
 import { folderSchema } from "@/lib/zod"
-import { FolderModel, Folder, Session, UserModel, User } from "@/types"
-import { ObjectId } from "mongodb"
+import { FolderModel, Folder, Session } from "@/types"
 import { cookies } from "next/headers"
 import { ZodError } from "zod"
 
@@ -16,7 +15,7 @@ export async function POST(request: Request) {
 
     const session = verify<Session>(authToken)
 
-    const user = await getUserById(new ObjectId(session.user.id))
+    const user = await getUserById(session.user.id)
 
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 })
@@ -61,20 +60,20 @@ export async function GET() {
 
     const session = verify<Session>(authToken)
 
-    const user = await getUserById(new ObjectId(session.user.id))
+    const user = await getUserById(session.user.id)
 
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const folders = await getFoldersByUserId(user._id)
+    const folders = await getFoldersByUserId(user._id.toString())
 
     const foldersResponse: Folder[] = await Promise.all(folders.map(async (folder) => {
-      const members = await Promise.all(folder.memberIds.map(async (memberId) => await getUserById(new ObjectId(memberId))))
+      const members = await Promise.all(folder.memberIds.map(async (memberId) => await getUserById(memberId)))
 
-      const creator = await getUserById(folder.creatorId)
+      const creator = await getUserById(folder.creatorId.toString())
 
-      const modifier = await getUserById(folder.modifierId)
+      const modifier = await getUserById(folder.modifierId.toString())
 
       const folderResponse: Folder = {
         id: folder._id.toString(),
