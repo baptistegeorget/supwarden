@@ -166,14 +166,14 @@ export async function getUserByEmail(email: string) {
   return user
 }
 
-export async function getInvitationsByUserId(id: ObjectId) {
+export async function getInvitationsByUserId(userId: ObjectId, status?: "pending" | "accepted" | "rejected") {
   const client = await clientPromise
 
   const db = client.db()
 
   const invitationsCollection = db.collection<InvitationModel>("invitations")
 
-  const invitations = await invitationsCollection.find({ userId: id }).toArray()
+  const invitations = await invitationsCollection.find({ userId, ...(status ? { status } : {}) }).toArray()
 
   return invitations
 }
