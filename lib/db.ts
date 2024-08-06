@@ -72,6 +72,18 @@ export async function createInvitation(invitation: InvitationModel) {
 
 // Updates
 
+export async function updateFolder(folder: WithId<FolderModel>) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const foldersCollection = db.collection<FolderModel>("folders")
+
+  const result = await foldersCollection.updateOne({ _id: folder._id }, { $set: folder })
+
+  return result
+}
+
 export async function updateInvitation(invitation: WithId<InvitationModel>) {
   const client = await clientPromise
 

@@ -32,12 +32,18 @@ export default function NotificationsPopup({
     }
   }
 
-  async function acceptInvitation(invitationId: string) {
+  async function respondToInvitation(invitationId: string, isAccepted: boolean) {
+    const response = await fetch(`/api/invitations/${invitationId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ isAccepted }),
+    })
 
-  }
-
-  async function refuseInvitation(invitationId: string) {
-
+    if (response.ok) {
+      getInvitations()
+    }
   }
 
   return (
@@ -46,7 +52,7 @@ export default function NotificationsPopup({
         <p><b>Invitations list</b></p>
         <InvitationsList
           invitations={invitations}
-          onSelect={(invitationId, isAccepted) => isAccepted ? acceptInvitation(invitationId) : refuseInvitation(invitationId)}
+          onSelect={respondToInvitation}
         />
         <SecondaryButton onClick={onClose}>Close</SecondaryButton>
       </div>

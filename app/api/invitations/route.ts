@@ -19,21 +19,11 @@ export async function POST(request: Request) {
 
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 })
-    }
+     }
 
     const body = await request.json()
 
     const { email, folderId } = await invitationSchema.parseAsync(body)
-
-    const userToInvite = await getUserByEmail(email)
-
-    if (!userToInvite) {
-      return Response.json({ error: "User not found" }, { status: 404 })
-    }
-
-    if (userToInvite._id.toString() === user._id.toString()) {
-      return Response.json({ error: "You can't invite yourself" }, { status: 400 })
-    }
 
     const folder = await getFolderById(folderId)
 
@@ -41,8 +31,18 @@ export async function POST(request: Request) {
       return Response.json({ error: "Folder not found" }, { status: 404 })
     }
 
+    if (folder.creatorId.toString() !== user._id.toString()) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     if (folder.type === "personal") {
       return Response.json({ error: "You can't invite users to your personal folder" }, { status: 400 })
+    }
+
+    const userToInvite = await getUserByEmail(email)
+
+    if (!userToInvite) {
+      return Response.json({ error: "User not found" }, { status: 404 })
     }
 
     if (folder.memberIds.includes(userToInvite._id.toString())) {
@@ -144,5 +144,6 @@ export async function GET() {
     if (error instanceof Error) {
       return Response.json({ error: error.message }, { status: 400 })
     }
+    return Response.json({ error: "An error occurred" }, { status: 500 })
   }
 }

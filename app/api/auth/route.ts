@@ -11,9 +11,7 @@ export async function POST(request: Request) {
 
     const { email, password } = await signInSchema.parseAsync(body)
 
-    const hashedPassword = hashPassword(password)
-
-    const user = await getUserByCredentials(email, hashedPassword)
+    const user = await getUserByCredentials(email, hashPassword(password))
 
     if (!user) {
       return Response.json({ error: "Invalid credentials" }, { status: 400 })
