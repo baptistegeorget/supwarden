@@ -12,7 +12,7 @@ export default function FoldersList({
   folders: Folder[],
   onSelect: (folder: Folder) => void
 }) {
-  const [selectedFolder, setSelectedFolder] = useState<Folder>(folders[0])
+  const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null)
 
   return (
     <div className="flex flex-col gap-2 w-full">

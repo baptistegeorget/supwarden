@@ -1,7 +1,6 @@
 "use client"
 
 import PrimaryButton from "@/components/buttons/primary"
-import ElementForm from "@/components/forms/element"
 import FolderForm from "@/components/forms/folder"
 import Header from "@/components/header"
 import FoldersList from "@/components/lists/folders"
@@ -11,6 +10,7 @@ import { ElementModel, Session, Folder } from "@/types"
 import { WithId } from "mongodb"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import MembersList from "@/components/lists/members"
 
 export default function HomePage() {
   const router = useRouter()
@@ -26,9 +26,9 @@ export default function HomePage() {
     async function getSession() {
       const session = await auth()
       if (session) {
-        setSession(session)
+        return setSession(session)
       } else {
-        router.push("/signin")
+        return router.push("/signin")
       }
     }
     getSession()
@@ -80,7 +80,7 @@ export default function HomePage() {
         </main>
         <aside className="w-1/4 flex flex-col items-center py-4 px-8 gap-2 border-l border-neutral-700">
           {selectedFolder && (
-            <ElementForm onSuccess={getElements} folderId={selectedFolder.id} />
+            <MembersList folder={selectedFolder} />
           )}
         </aside>
       </div>
