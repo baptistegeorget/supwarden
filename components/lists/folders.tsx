@@ -10,7 +10,7 @@ export default function FoldersList({
   onSelect
 }: {
   folders: Folder[],
-  onSelect: (folder: Folder) => void
+  onSelect: (folder: Folder | null) => void
 }) {
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null)
 
@@ -22,8 +22,8 @@ export default function FoldersList({
             <PrimaryButton
               key={folder.id}
               onClick={() => {
-                setSelectedFolder(folder)
-                onSelect(folder)
+                setSelectedFolder(null)
+                onSelect(null)
               }}
               justify="justify-start"
             >

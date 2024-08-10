@@ -19,7 +19,7 @@ export async function POST(request: Request) {
 
     if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 })
-     }
+    }
 
     const body = await request.json()
 
@@ -106,7 +106,7 @@ export async function GET() {
       const creator = await getUserById(invitation.creatorId.toString())
 
       const modifier = await getUserById(invitation.modifierId.toString())
-      
+
       const invitationResponse: Invitation = {
         id: invitation._id.toString(),
         folder: folder ? {
@@ -135,7 +135,7 @@ export async function GET() {
         } : null,
         modifiedOn: invitation.modifiedOn
       }
-      
+
       return invitationResponse
     }))
 

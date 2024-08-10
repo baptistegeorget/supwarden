@@ -33,12 +33,11 @@ export default function NotificationsPopup({
   }
 
   async function respondToInvitation(invitationId: string, isAccepted: boolean) {
-    const response = await fetch(`/api/invitations/${invitationId}`, {
+    const response = await fetch(`/api/invitations/${invitationId}?isAccepted=${isAccepted}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ isAccepted }),
     })
 
     if (response.ok) {
