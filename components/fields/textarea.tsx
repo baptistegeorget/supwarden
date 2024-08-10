@@ -5,7 +5,8 @@ export default function TextAreaField({
   required,
   minLength,
   maxLength,
-  value
+  value,
+  onChange
 }: {
   label?: string,
   name: string,
@@ -13,7 +14,8 @@ export default function TextAreaField({
   required?: boolean,
   minLength?: number,
   maxLength?: number,
-  value?: string
+  value?: string,
+  onChange?: (value: string) => void
 }) {
   return (
     <div className="flex flex-col gap-1 w-full">
@@ -26,6 +28,7 @@ export default function TextAreaField({
         minLength={minLength}
         maxLength={maxLength}
         value={value}
+        onChange={e => onChange && onChange(e.target.value)}
       />
     </div>
   )

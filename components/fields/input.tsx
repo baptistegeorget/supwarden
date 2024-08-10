@@ -8,7 +8,8 @@ export default function InputField({
   required,
   minLength,
   maxLength,
-  value
+  value,
+  onChange
 }: {
   label?: string,
   name: string,
@@ -17,8 +18,22 @@ export default function InputField({
   required?: boolean,
   minLength?: number,
   maxLength?: number,
-  value?: string
+  value?: string,
+  onChange?: (value: string | File | null) => void
 }) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (type === 'file') {
+      const file = e.target.files ? e.target.files[0] : null
+      if (onChange) {
+        onChange(file)
+      }
+    } else {
+      if (onChange) {
+        onChange(e.target.value);
+      }
+    }
+  }
+
   return (
     <div className="flex flex-col gap-1 w-full">
       {label && <label htmlFor={name}>{required && "*"}{label}</label>}
@@ -31,6 +46,7 @@ export default function InputField({
         minLength={minLength}
         maxLength={maxLength}
         value={value}
+        onChange={handleChange}
       />
     </div>
   )
