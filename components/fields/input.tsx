@@ -1,3 +1,5 @@
+import { HTMLInputTypeAttribute } from "react"
+
 export default function InputField({
   label,
   name,
@@ -11,7 +13,7 @@ export default function InputField({
   label?: string,
   name: string,
   placeholder?: string,
-  type: "text" | "email" | "password",
+  type: HTMLInputTypeAttribute,
   required?: boolean,
   minLength?: number,
   maxLength?: number,
