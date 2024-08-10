@@ -5,7 +5,8 @@ export default function InputField({
   type,
   required,
   minLength,
-  maxLength
+  maxLength,
+  value
 }: {
   label?: string,
   name: string,
@@ -13,7 +14,8 @@ export default function InputField({
   type: "text" | "email" | "password",
   required?: boolean,
   minLength?: number,
-  maxLength?: number
+  maxLength?: number,
+  value?: string
 }) {
   return (
     <div className="flex flex-col gap-1 w-full">
@@ -26,6 +28,7 @@ export default function InputField({
         required={required}
         minLength={minLength}
         maxLength={maxLength}
+        value={value}
       />
     </div>
   )
