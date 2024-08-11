@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import SignUpForm from "@/components/forms/SignUpForm"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect } from "react"
 import { NotificationContext } from "@/components/providers/NotificationProvider"
 import { auth } from "@/lib/auth"
 import { useRouter } from "next/navigation"

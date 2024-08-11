@@ -3,7 +3,7 @@
 import Link from "next/link"
 import SignInForm from "@/components/forms/SignInForm"
 import { auth } from "@/lib/auth"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect } from "react"
 import { NotificationContext } from "@/components/providers/NotificationProvider"
 import { useRouter } from "next/navigation"
 
