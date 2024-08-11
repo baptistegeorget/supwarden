@@ -50,7 +50,7 @@ export type MemberModel = {
 
 export type MemberResponse = {
   id: string,
-  folder: { id: string, name: string },
+  folder: FolderResponse,
   user: UserResponse,
   creator: UserResponse,
   createdOn: string,
@@ -70,7 +70,7 @@ export type InvitationModel = {
 
 export type InvitationResponse = {
   id: string,
-  folder: { id: string, name: string },
+  folder: FolderResponse,
   user: UserResponse,
   status: "pending" | "accepted" | "rejected",
   creator: UserResponse,
@@ -97,7 +97,7 @@ export type ElementModel = {
 
 export type ElementResponse = {
   id: string,
-  folder: { id: string, name: string },
+  folder: FolderResponse,
   name: string,
   identifier?: string,
   password?: string,
