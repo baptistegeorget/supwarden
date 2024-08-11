@@ -1,4 +1,4 @@
-import { Folder } from "@/types"
+import { FolderResponse } from "@/types"
 import PrimaryButton from "@/components/buttons/primary"
 import TertiaryButton from "@/components/buttons/tertiary"
 
@@ -7,9 +7,9 @@ export default function FoldersList({
   selectedFolder,
   onSelect
 }: {
-  folders: Folder[],
-  selectedFolder: Folder | null,
-  onSelect: (folder: Folder) => void
+  folders: FolderResponse[],
+  selectedFolder: FolderResponse | null,
+  onSelect: (folder: FolderResponse) => void
 }) {
   return (
     <div className="flex flex-col gap-2 w-full">
