@@ -1,12 +1,9 @@
 import { signUpSchema } from "@/lib/zod"
-import { checkEmailIsUsed, createFolder, createUser } from "@/lib/db"
+import { checkEmailIsUsed, createFolder, createMember, createUser } from "@/lib/db"
 import { hashPassword } from "@/lib/password"
 import { ZodError } from "zod"
-import { FolderModel, UserModel } from "@/types"
+import { FolderModel, MemberModel, UserModel } from "@/types"
 
-/**
- * Create a new user account and personal folder for the user.
- */
 export async function POST(request: Request) {
   try {
     const body = await request.json()
@@ -23,29 +20,39 @@ export async function POST(request: Request) {
       return Response.json({ error: "Email is already used" }, { status: 400 })
     }
 
-    const user: UserModel = {
+    const userModel: UserModel = {
       firstName: firstName,
       lastName: lastName,
       email: email,
       password: hashPassword(password),
       status: "active",
       createdOn: new Date().toISOString(),
-      modifiedOn: new Date().toISOString(),
+      modifiedOn: new Date().toISOString()
     }
 
-    const result = await createUser(user)
+    const userResult = await createUser(userModel)
 
-    const folder: FolderModel = {
+    const folderModel: FolderModel = {
       name: "Personal",
       type: "personal",
-      memberIds: [result.insertedId.toString()],
-      creatorId: result.insertedId,
+      creatorId: userResult.insertedId,
       createdOn: new Date().toISOString(),
-      modifierId: result.insertedId,
-      modifiedOn: new Date().toISOString(),
+      modifierId: userResult.insertedId,
+      modifiedOn: new Date().toISOString()
     }
 
-    await createFolder(folder)
+    const folderResult = await createFolder(folderModel)
+
+    const memberModel: MemberModel = {
+      folderId: folderResult.insertedId,
+      userId: userResult.insertedId,
+      creatorId: userResult.insertedId,
+      createdOn: new Date().toISOString(),
+      modifierId: userResult.insertedId,
+      modifiedOn: new Date().toISOString()
+    }
+
+    await createMember(memberModel)
 
     return Response.json(null, { status: 201 })
   } catch (error) {

@@ -3,7 +3,7 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { verify } from "@/lib/jwt"
-import { Session } from "@/types"
+import { SessionResponse } from "@/types"
 
 if (!process.env.SRV_BASE_URL) {
   throw new Error('Invalid/Missing environment variable: "SRV_BASE_URL"')
@@ -48,7 +48,7 @@ export async function auth() {
       return null
     }
 
-    const session = verify<Session>(authToken)
+    const session = verify<SessionResponse>(authToken)
 
     return session
   } catch (error) {

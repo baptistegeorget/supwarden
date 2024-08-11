@@ -1,5 +1,5 @@
 import clientPromise from "@/lib/mongodb"
-import { ElementModel, FolderModel, InvitationModel, UserModel } from "@/types"
+import { ElementModel, FolderModel, InvitationModel, MemberModel, SessionModel, UserModel } from "@/types"
 import { ObjectId, WithId } from "mongodb"
 
 // Checks
@@ -58,6 +58,18 @@ export async function createFolder(folder: FolderModel) {
   return result
 }
 
+export async function createMember(member: MemberModel) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const membersCollection = db.collection<MemberModel>("members")
+
+  const result = await membersCollection.insertOne(member)
+
+  return result
+}
+
 export async function createInvitation(invitation: InvitationModel) {
   const client = await clientPromise
 
@@ -78,6 +90,18 @@ export async function createElement(element: ElementModel) {
   const elementsCollection = db.collection<ElementModel>("elements")
 
   const result = await elementsCollection.insertOne(element)
+
+  return result
+}
+
+export async function createSession(session: SessionModel) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const sessionsCollection = db.collection<SessionModel>("sessions")
+
+  const result = await sessionsCollection.insertOne(session)
 
   return result
 }
@@ -155,7 +179,7 @@ export async function getUserByCredentials(email: string, password: string) {
 
   const usersCollection = db.collection<UserModel>("users")
 
-  const user = await usersCollection.findOne({ email, password }, { projection: { password: 0, pin: 0 } })
+  const user = await usersCollection.findOne({ email, password, status: "active" }, { projection: { password: 0, pin: 0 } })
 
   return user
 }

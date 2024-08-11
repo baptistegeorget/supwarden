@@ -1,13 +1,10 @@
-import { getUserByCredentials } from "@/lib/db"
+import { createSession, getUserByCredentials } from "@/lib/db"
 import { hashPassword } from "@/lib/password"
 import { signInSchema } from "@/lib/zod"
 import { ZodError } from "zod"
-import { Session } from "@/types"
+import { SessionModel, SessionResponse } from "@/types"
 import { sign } from "@/lib/jwt"
 
-/**
- * Create a new session for the user with the provided credentials.
- */
 export async function POST(request: Request) {
   try {
     const body = await request.json()
@@ -20,21 +17,27 @@ export async function POST(request: Request) {
       return Response.json({ error: "Invalid credentials" }, { status: 400 })
     }
 
-    if (user.status === "deleted") {
-      return Response.json({ error: "User is deleted" }, { status: 400 })
+    const sessionModel: SessionModel = {
+      userId: user._id,
+      date: new Date().toISOString()
     }
 
-    const session: Session = {
+    const sessionResult = await createSession(sessionModel)
+
+    const sessionResponse: SessionResponse = {
+      id: sessionResult.insertedId.toString(),
       user: {
-        id: user._id.toString(),
-        email: user.email,
-        firstName: user.firstName,
+        id: sessionModel.userId.toString(),
         lastName: user.lastName,
+        firstName: user.firstName,
+        email: user.email,
+        createdOn: user.createdOn,
+        modifiedOn: user.modifiedOn
       },
-      date: new Date().toISOString(),
+      date: sessionModel.date
     }
 
-    const token = sign(session)
+    const token = sign(sessionResponse)
 
     return Response.json({ token }, { status: 200 })
   } catch (error) {

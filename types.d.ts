@@ -1,8 +1,5 @@
 import { ObjectId } from "mongodb"
 
-/**
- * Type User for the database
- */
 export type UserModel = {
   lastName: string,
   firstName: string,
@@ -11,51 +8,56 @@ export type UserModel = {
   pin?: string,
   status: "active" | "disabled" | "deleted",
   createdOn: string,
-  modifiedOn: string,
+  modifiedOn: string
 }
 
-/**
- * Type User for the API response
- */
 export type UserResponse = {
   id: string,
   lastName: string,
   firstName: string,
   email: string,
   createdOn: string,
-  modifiedOn: string,
+  modifiedOn: string
 }
 
-/**
- * Type Folder for the database
- */
 export type FolderModel = {
   name: string,
   type: "personal" | "shared",
-  memberIds: string[],
   creatorId: ObjectId,
   createdOn: string,
   modifierId: ObjectId,
-  modifiedOn: string,
+  modifiedOn: string
 }
 
-/**
- * Type Folder for the API response
- */
 export type FolderResponse = {
   id: string,
   name: string,
   type: "personal" | "shared",
-  members: UserResponse[],
   creator: UserResponse,
   createdOn: string,
   modifier: UserResponse,
-  modifiedOn: string,
+  modifiedOn: string
 }
 
-/**
- * Type Invitation for the database
- */
+export type MemberModel = {
+  folderId: ObjectId,
+  userId: ObjectId,
+  creatorId: ObjectId,
+  createdOn: string,
+  modifierId: ObjectId,
+  modifiedOn: string
+}
+
+export type MemberResponse = {
+  id: string,
+  folder: { id: string, name: string },
+  user: UserResponse,
+  creator: UserResponse,
+  createdOn: string,
+  modifier: UserResponse,
+  modifiedOn: string
+}
+
 export type InvitationModel = {
   folderId: ObjectId,
   userId: ObjectId,
@@ -63,12 +65,9 @@ export type InvitationModel = {
   creatorId: ObjectId,
   createdOn: string,
   modifierId: ObjectId,
-  modifiedOn: string,
+  modifiedOn: string
 }
 
-/**
- * Type Invitation for the API response
- */
 export type InvitationResponse = {
   id: string,
   folder: { id: string, name: string },
@@ -77,12 +76,9 @@ export type InvitationResponse = {
   creator: UserResponse,
   createdOn: string,
   modifier: UserResponse,
-  modifiedOn: string,
+  modifiedOn: string
 }
 
-/**
- * Type Element for the database
- */
 export type ElementModel = {
   folderId: ObjectId,
   name: string,
@@ -96,12 +92,9 @@ export type ElementModel = {
   creatorId: ObjectId,
   createdOn: string,
   modifierId: ObjectId,
-  modifiedOn: string,
+  modifiedOn: string
 }
 
-/**
- * Type Element for the API response
- */
 export type ElementResponse = {
   id: string,
   folder: { id: string, name: string },
@@ -116,21 +109,16 @@ export type ElementResponse = {
   creator: UserResponse,
   createdOn: string,
   modifier: UserResponse,
-  modifiedOn: string,
+  modifiedOn: string
 }
 
-/**
- * Type Session for the database
- */
 export type SessionModel = {
   userId: ObjectId,
-  date: string,
+  date: string
 }
 
-/**
- * Type Session for the API response
- */
 export type SessionResponse = {
+  id: string,
   user: UserResponse,
-  date: string,
+  date: string
 }
