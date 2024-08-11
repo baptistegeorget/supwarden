@@ -15,6 +15,18 @@ export type UserModel = {
 }
 
 /**
+ * Type User for the API response
+ */
+export type UserResponse = {
+  id: string,
+  lastName: string,
+  firstName: string,
+  email: string,
+  createdOn: string,
+  modifiedOn: string,
+}
+
+/**
  * Type Folder for the database
  */
 export type FolderModel = {
@@ -24,6 +36,20 @@ export type FolderModel = {
   creatorId: ObjectId,
   createdOn: string,
   modifierId: ObjectId,
+  modifiedOn: string,
+}
+
+/**
+ * Type Folder for the API response
+ */
+export type FolderResponse = {
+  id: string,
+  name: string,
+  type: "personal" | "shared",
+  members: UserResponse[],
+  creator: UserResponse,
+  createdOn: string,
+  modifier: UserResponse,
   modifiedOn: string,
 }
 
@@ -41,6 +67,20 @@ export type InvitationModel = {
 }
 
 /**
+ * Type Invitation for the API response
+ */
+export type InvitationResponse = {
+  id: string,
+  folder: { id: string, name: string },
+  user: UserResponse,
+  status: "pending" | "accepted" | "rejected",
+  creator: UserResponse,
+  createdOn: string,
+  modifier: UserResponse,
+  modifiedOn: string,
+}
+
+/**
  * Type Element for the database
  */
 export type ElementModel = {
@@ -48,54 +88,21 @@ export type ElementModel = {
   name: string,
   identifier?: string,
   password?: string,
-  urls: string[],
+  urls?: string[],
   note?: string,
-  customFields: { type: "visible" | "hidden" | "attachment", value: string }[],
-  idsOfMembersWhoCanEdit: string[],
-  isSensitive: boolean,
+  customFields?: { type: "visible" | "hidden" | "attachment", value: string }[],
+  idsOfMembersWhoCanEdit?: string[],
+  isSensitive?: boolean,
   creatorId: ObjectId,
   createdOn: string,
   modifierId: ObjectId,
   modifiedOn: string,
 }
 
-export type Session = {
-  user: { id: string, lastName: string, firstName: string, email: string },
-  date: string,
-}
-
-export type User = {
-  id: string,
-  lastName: string,
-  firstName: string,
-  email: string,
-  createdOn: string,
-  modifiedOn: string,
-}
-
-export type Folder = {
-  id: string,
-  name: string,
-  type: "personal" | "shared",
-  members: ({ id: string, lastName: string, firstName: string, email: string } | null)[],
-  creator: { id: string, lastName: string, firstName: string, email: string } | null,
-  createdOn: string,
-  modifier: { id: string, lastName: string, firstName: string, email: string } | null,
-  modifiedOn: string,
-}
-
-export type Invitation = {
-  id: string,
-  folder: { id: string, name: string } | null,
-  user: { id: string, lastName: string, firstName: string, email: string } | null,
-  status: "pending" | "accepted" | "rejected",
-  creator: { id: string, lastName: string, firstName: string, email: string } | null,
-  createdOn: string,
-  modifier: { id: string, lastName: string, firstName: string, email: string } | null,
-  modifiedOn: string,
-}
-
-export type Element = {
+/**
+ * Type Element for the API response
+ */
+export type ElementResponse = {
   id: string,
   folder: { id: string, name: string },
   name: string,
@@ -104,10 +111,26 @@ export type Element = {
   urls?: string[],
   note?: string,
   customFields?: { type: "visible" | "hidden" | "attachment", value: string }[],
-  membersWhoCanEdit?: ({ id: string, lastName: string, firstName: string, email: string } | null)[],
+  membersWhoCanEdit?: UserResponse[],
   isSensitive?: boolean,
-  creator: { id: string, lastName: string, firstName: string, email: string } | null,
+  creator: UserResponse,
   createdOn: string,
-  modifier: { id: string, lastName: string, firstName: string, email: string } | null,
+  modifier: UserResponse,
   modifiedOn: string,
+}
+
+/**
+ * Type Session for the database
+ */
+export type SessionModel = {
+  userId: ObjectId,
+  date: string,
+}
+
+/**
+ * Type Session for the API response
+ */
+export type SessionResponse = {
+  user: UserResponse,
+  date: string,
 }
