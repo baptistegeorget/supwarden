@@ -253,3 +253,15 @@ export async function getMembersByFolderId(folderId: string) {
 
   return members
 }
+
+export async function getMember(userId: string, folderId: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const membersCollection = db.collection<MemberModel>("members")
+
+  const member = await membersCollection.findOne({ userId: new ObjectId(userId), folderId: new ObjectId(folderId) })
+
+  return member
+}

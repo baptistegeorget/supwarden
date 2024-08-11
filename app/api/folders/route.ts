@@ -1,7 +1,7 @@
 import { createFolder, createMember, getFoldersByUserId, getUserById } from "@/lib/db"
 import { verify } from "@/lib/jwt"
 import { folderSchema } from "@/lib/zod"
-import { FolderModel, FolderResponse, MemberModel, SessionResponse, UserModel, UserResponse } from "@/types"
+import { FolderModel, FolderResponse, MemberModel, SessionResponse, UserModel } from "@/types"
 import { WithId } from "mongodb"
 import { cookies } from "next/headers"
 import { ZodError } from "zod"

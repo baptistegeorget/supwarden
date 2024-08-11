@@ -1,11 +1,13 @@
-import { createInvitation, getFolderById, getPendingInvitationsByUserId, getUserByEmail, getUserById, checkPendingInvitationExist } from "@/lib/db"
+import { createInvitation, getFolderById, getPendingInvitationsByUserId, getUserByEmail, getUserById, checkPendingInvitationExist, getMember, getInvitationById, createMember, updateInvitation } from "@/lib/db"
 import { verify } from "@/lib/jwt"
 import { invitationSchema } from "@/lib/zod"
-import { Invitation, InvitationModel, Session } from "@/types"
+import { InvitationResponse, InvitationModel, SessionResponse, UserModel, FolderModel } from "@/types"
+import { WithId } from "mongodb"
 import { cookies } from "next/headers"
+import { NextRequest } from "next/server"
 import { ZodError } from "zod"
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const authToken = cookies().get("auth-token")?.value
 
@@ -13,7 +15,7 @@ export async function POST(request: Request) {
       return Response.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const session = verify<Session>(authToken)
+    const session = verify<SessionResponse>(authToken)
 
     const user = await getUserById(session.user.id)
 
@@ -21,9 +23,11 @@ export async function POST(request: Request) {
       return Response.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const body = await request.json()
+    const folderId = request.nextUrl.searchParams.get("folderId")
 
-    const { email, folderId } = await invitationSchema.parseAsync(body)
+    if (!folderId) {
+      return Response.json({ error: "Folder ID is required" }, { status: 400 })
+    }
 
     const folder = await getFolderById(folderId)
 
@@ -39,13 +43,19 @@ export async function POST(request: Request) {
       return Response.json({ error: "You can't invite users to your personal folder" }, { status: 400 })
     }
 
+    const body = await request.json()
+
+    const { email } = await invitationSchema.parseAsync(body)
+
     const userToInvite = await getUserByEmail(email)
 
     if (!userToInvite) {
       return Response.json({ error: "User not found" }, { status: 404 })
     }
 
-    if (folder.memberIds.includes(userToInvite._id.toString())) {
+    const member = await getMember(userToInvite._id.toString(), folder._id.toString())
+
+    if (member) {
       return Response.json({ error: "User is already a member of this folder" }, { status: 400 })
     }
 
@@ -55,7 +65,7 @@ export async function POST(request: Request) {
       return Response.json({ error: "Invitation already sent" }, { status: 400 })
     }
 
-    const invitation: InvitationModel = {
+    const invitationModel: InvitationModel = {
       folderId: folder._id,
       userId: userToInvite._id,
       status: "pending",
@@ -65,7 +75,7 @@ export async function POST(request: Request) {
       modifiedOn: new Date().toISOString(),
     }
 
-    await createInvitation(invitation)
+    await createInvitation(invitationModel)
 
     return Response.json(null, { status: 201 })
   } catch (error) {
@@ -88,7 +98,7 @@ export async function GET() {
       return Response.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const session = verify<Session>(authToken)
+    const session = verify<SessionResponse>(authToken)
 
     const user = await getUserById(session.user.id)
 
@@ -98,41 +108,70 @@ export async function GET() {
 
     const invitations = await getPendingInvitationsByUserId(user._id.toString())
 
-    const invitationsResponse: Invitation[] = await Promise.all(invitations.map(async (invitation) => {
-      const folder = await getFolderById(invitation.folderId.toString())
+    const invitationsResponse: InvitationResponse[] = await Promise.all(invitations.map(async (invitation) => {
+      const folder = await getFolderById(invitation.folderId.toString()) as WithId<FolderModel>
 
-      const user = await getUserById(invitation.userId.toString())
+      const creatorOfFolder = await getUserById(folder.creatorId.toString()) as WithId<UserModel>
 
-      const creator = await getUserById(invitation.creatorId.toString())
+      const modifierOfFolder = await getUserById(folder.modifierId.toString()) as WithId<UserModel>
 
-      const modifier = await getUserById(invitation.modifierId.toString())
+      const user = await getUserById(invitation.userId.toString()) as WithId<UserModel>
 
-      const invitationResponse: Invitation = {
+      const creator = await getUserById(invitation.creatorId.toString()) as WithId<UserModel>
+
+      const modifier = await getUserById(invitation.modifierId.toString()) as WithId<UserModel>
+
+      const invitationResponse: InvitationResponse = {
         id: invitation._id.toString(),
-        folder: folder ? {
+        folder: {
           id: folder._id.toString(),
           name: folder.name,
-        } : null,
-        user: user ? {
+          type: folder.type,
+          creator: {
+            id: creatorOfFolder._id.toString(),
+            lastName: creatorOfFolder.lastName,
+            firstName: creatorOfFolder.firstName,
+            email: creatorOfFolder.email,
+            createdOn: creatorOfFolder.createdOn,
+            modifiedOn: creatorOfFolder.modifiedOn
+          },
+          createdOn: folder.createdOn,
+          modifier: {
+            id: modifierOfFolder._id.toString(),
+            lastName: modifierOfFolder.lastName,
+            firstName: modifierOfFolder.firstName,
+            email: modifierOfFolder.email,
+            createdOn: modifierOfFolder.createdOn,
+            modifiedOn: modifierOfFolder.modifiedOn
+          },
+          modifiedOn: folder.modifiedOn
+        },
+        user: {
           id: user._id.toString(),
           lastName: user.lastName,
           firstName: user.firstName,
           email: user.email,
-        } : null,
+          createdOn: user.createdOn,
+          modifiedOn: user.modifiedOn
+        },
         status: invitation.status,
-        creator: creator ? {
+        creator: {
           id: creator._id.toString(),
           lastName: creator.lastName,
           firstName: creator.firstName,
           email: creator.email,
-        } : null,
+          createdOn: invitation.createdOn,
+          modifiedOn: invitation.modifiedOn
+        },
         createdOn: invitation.createdOn,
-        modifier: modifier ? {
+        modifier: {
           id: modifier._id.toString(),
           lastName: modifier.lastName,
           firstName: modifier.firstName,
           email: modifier.email,
-        } : null,
+          createdOn: invitation.createdOn,
+          modifiedOn: invitation.modifiedOn
+        },
         modifiedOn: invitation.modifiedOn
       }
 
@@ -141,6 +180,88 @@ export async function GET() {
 
     return Response.json({ invitations: invitationsResponse }, { status: 200 })
   } catch (error) {
+    if (error instanceof Error) {
+      return Response.json({ error: error.message }, { status: 400 })
+    }
+    return Response.json({ error: "An error occurred" }, { status: 500 })
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const authToken = cookies().get("auth-token")?.value
+
+    if (!authToken) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const session = verify<SessionResponse>(authToken)
+
+    const user = await getUserById(session.user.id)
+
+    if (!user) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const invitationId = request.nextUrl.searchParams.get("invitationId")
+
+    if (!invitationId) {
+      return Response.json({ error: "Invitation ID is required" }, { status: 400 })
+    }
+
+    const invitation = await getInvitationById(invitationId)
+
+    if (!invitation) {
+      return Response.json({ error: "Invitation not found" }, { status: 404 })
+    }
+
+    if (invitation.userId.toString() !== user._id.toString()) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    if (invitation.status !== "pending") {
+      return Response.json({ error: "Invitation has already been responded to" }, { status: 400 })
+    }
+
+    const status = request.nextUrl.searchParams.get("status")
+
+    if (!status) {
+      return Response.json({ error: "Missing status" }, { status: 400 })
+    }
+
+    if (status !== "accepted" && status !== "rejected") {
+      return Response.json({ error: "Invalid status" }, { status: 400 })
+    }
+
+    const folder = await getFolderById(invitation.folderId.toString())
+
+    if (!folder) {
+      return Response.json({ error: "Folder not found" }, { status: 404 })
+    }
+
+    const member = await getMember(user._id.toString(), folder._id.toString())
+
+    if (!member) {
+      await createMember({
+        userId: user._id,
+        folderId: folder._id,
+        creatorId: user._id,
+        createdOn: new Date().toISOString(),
+        modifierId: user._id,
+        modifiedOn: new Date().toISOString()
+      })
+    }
+
+    invitation.status = status
+
+    await updateInvitation(invitation)
+
+    return Response.json(null, { status: 200 })
+  } catch (error) {
+    if (error instanceof ZodError) {
+      const errorDetails = error.errors.map(e => e.message).join(", ")
+      return Response.json({ error: errorDetails }, { status: 400 })
+    }
     if (error instanceof Error) {
       return Response.json({ error: error.message }, { status: 400 })
     }
