@@ -39,9 +39,9 @@ export default function InvitationsPopupButton() {
     })
     if (response.ok) {
       getInvitations()
-      notify("Invitation updated", "success")
+      notify(`Invitation ${status}`, "success")
     } else {
-      notify("Failed to update invitation", "error")
+      notify(`Failed to update ${status}`, "error")
     }
   }
 

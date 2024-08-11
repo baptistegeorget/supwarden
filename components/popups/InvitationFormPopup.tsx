@@ -2,8 +2,7 @@
 
 import SecondaryButton from "@/components/buttons/SecondaryButton"
 import InvitationForm from "@/components/forms/InvitationForm"
-import { useContext } from "react"
-import { NotificationContext } from "@/components/providers/NotificationProvider"
+import { useNotification } from "../providers/NotificationProvider"
 
 export default function InvitationFormPopup({
   folderId,
@@ -12,7 +11,7 @@ export default function InvitationFormPopup({
   folderId: string,
   onClose: () => void
 }) {
-  const notify = useContext(NotificationContext)
+  const notify = useNotification()
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
