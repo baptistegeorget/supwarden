@@ -3,13 +3,15 @@ export default function SelectField({
   name,
   options,
   optionSelected,
-  onChange
+  onChange,
+  multiple
 }: {
   label?: string,
   name: string,
   options: string[],
   optionSelected?: string,
-  onChange?: (value: string) => void
+  onChange?: (value: string) => void,
+  multiple?: boolean
 }) {
   return (
     <div className="flex flex-col gap-1 w-full">
@@ -17,6 +19,7 @@ export default function SelectField({
       <select
         className="py-1 px-2 rounded border border-neutral-700 bg-transparent w-auto"
         name={name}
+        multiple={multiple}
         onChange={event => onChange && onChange(event.target.value)}
       >
         {options.map((option, index) => (
