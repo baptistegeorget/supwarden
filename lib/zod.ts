@@ -1,47 +1,38 @@
 import zod from "zod"
 
-const emailSchema = zod.string().email()
-const passwordSchema = zod.string().min(8).max(32)
-const shortStringSchema = zod.string().min(1).max(32)
-const longStringSchema = zod.string().min(1).max(512)
-const base64Schema = zod.string().regex(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).base64,/)
-const objectIdSchema = zod.string().regex(/^[a-fA-F0-9]{24}$/)
-const urlSchema = zod.string().url()
-
 export const signUpSchema = zod.object({
-  firstName: shortStringSchema,
-  lastName: shortStringSchema,
-  email: emailSchema,
-  password: passwordSchema,
-  passwordConfirmation: passwordSchema
+  firstName: zod.string().min(1).max(32),
+  lastName: zod.string().min(1).max(32),
+  email: zod.string().email(),
+  password: zod.string().min(8).max(32),
+  passwordConfirmation: zod.string().min(8).max(32)
 })
 
 export const signInSchema = zod.object({
-  email: emailSchema,
-  password: passwordSchema,
+  email: zod.string().email(),
+  password: zod.string().min(8).max(32)
 })
 
 export const folderSchema = zod.object({
-  name: shortStringSchema,
+  name: zod.string().min(1).max(32)
 })
 
 export const invitationSchema = zod.object({
-  email: emailSchema,
-  folderId: objectIdSchema,
+  email: zod.string().email()
 })
 
 const customFieldSchema = zod.object({ 
   type: zod.enum(["visible", "hidden", "attachment"]),
-  value: zod.union([shortStringSchema, base64Schema]),
+  value: zod.union([zod.string().min(1).max(32), zod.string().regex(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).base64,/)])
 })
 
 export const elementSchema = zod.object({
-  name: shortStringSchema,
-  identifier: shortStringSchema.optional(),
-  password: passwordSchema.optional(),
-  urls: zod.array(urlSchema).optional(),
-  note: longStringSchema.optional(),
+  name: zod.string().min(1).max(32),
+  identifier: zod.string().min(1).max(32).optional(),
+  password: zod.string().min(8).max(32).optional(),
+  urls: zod.array(zod.string().url()).optional(),
+  note: zod.string().min(1).max(512).optional(),
   customFields: zod.array(customFieldSchema).optional(),
-  idsOfMembersWhoCanEdit: zod.array(objectIdSchema).optional(),
-  isSensitive: zod.boolean().optional(),
+  idsOfMembersWhoCanEdit: zod.array(zod.string().regex(/^[a-fA-F0-9]{24}$/)).optional(),
+  isSensitive: zod.boolean().optional()
 })
