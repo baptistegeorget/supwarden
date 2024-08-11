@@ -2,12 +2,12 @@
 
 import InvitationsPopup from "@/components/popups/InvitationsPopup"
 import { InvitationResponse } from "@/types"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
-import { NotificationContext } from "@/components/providers/NotificationProvider"
+import { useNotification } from "../providers/NotificationProvider"
 
 export default function InvitationsPopupButton() {
-  const notify = useContext(NotificationContext)
+  const notify = useNotification()
   const [isNotificationPopupVisible, setIsNotificationPopupVisible] = useState(false)
   const [invitations, setInvitations] = useState<InvitationResponse[]>([])
 

@@ -2,24 +2,26 @@
 
 import Link from "next/link"
 import SignUpForm from "@/components/forms/SignUpForm"
-import { useContext, useEffect } from "react"
-import { NotificationContext } from "@/components/providers/NotificationProvider"
+import { useNotification } from "@/components/providers/NotificationProvider"
 import { auth } from "@/lib/auth"
 import { useRouter } from "next/navigation"
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
+import { useEffect } from "react"
 
 export default function SignUpPage() {
-  const notify = useContext(NotificationContext)
+  const notify = useNotification()
   const router = useRouter()
 
   useEffect(() => {
-    async function getSession() {
-      const session = await auth()
-      if (session) {
-        return router.push("/")
-      }
+    getSession(router)
+  }, [])
+
+  async function getSession(router: AppRouterInstance) {
+    const session = await auth()
+    if (session) {
+      return router.push("/")
     }
-    getSession()
-  }, [router])
+  }
 
   return (
     <div className="flex-1 flex flex-col justify-center items-center">

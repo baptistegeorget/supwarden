@@ -1,9 +1,9 @@
 "use client"
 
-import { createContext, ReactNode, useCallback, useState } from "react"
+import { createContext, ReactNode, useCallback, useContext, useState } from "react"
 import { createPortal } from "react-dom"
 
-export const NotificationContext = createContext<(
+const NotificationContext = createContext<(
   message: string,
   type?: "info" | "success" | "warning" | "error",
   duration?: number
@@ -34,4 +34,8 @@ export default function NotificationProvider({ children }: { children: ReactNode
       }
     </NotificationContext.Provider>
   )
+}
+
+export function useNotification() {
+  return useContext(NotificationContext)
 }

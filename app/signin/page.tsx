@@ -3,23 +3,25 @@
 import Link from "next/link"
 import SignInForm from "@/components/forms/SignInForm"
 import { auth } from "@/lib/auth"
-import { useContext, useEffect } from "react"
-import { NotificationContext } from "@/components/providers/NotificationProvider"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useNotification } from "@/components/providers/NotificationProvider"
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 
 export default function SignInPage() {
-  const notify = useContext(NotificationContext)
+  const notify = useNotification()
   const router = useRouter()
 
   useEffect(() => {
-    async function getSession() {
-      const session = await auth()
-      if (session) {
-        return router.push("/")
-      }
+    getSession(router)
+  }, [])
+
+  async function getSession(router: AppRouterInstance) {
+    const session = await auth()
+    if (session) {
+      return router.push("/")
     }
-    getSession()
-  }, [router])
+  }
 
   return (
     <div className="flex-1 flex flex-col justify-center items-center">
