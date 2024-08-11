@@ -1,27 +1,36 @@
 "use client"
 
 import { signIn } from "@/lib/auth"
-import { useState } from "react"
 import InputField from "@/components/fields/input"
 import PrimaryButton from "@/components/buttons/primary"
 
-export default function SignInForm() {
-  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
-
-  async function handleFormAction(formData: FormData) {
-    try {
-      setErrorMessage(undefined)
-      await signIn(formData)
-    } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(error.message)
-      }
-    }
-  }
-
+export default function SignInForm({
+  onSuccess,
+  onFailure
+}: {
+  onSuccess?: () => void
+  onFailure?: (error: string) => void
+}) {
   return (
     <form
-      action={handleFormAction}
+      onSubmit={async (event) => {
+        event.preventDefault()
+        const form = event.currentTarget
+        const formData = new FormData(form)
+        try {
+          await signIn(formData)
+          form.reset()
+          if (onSuccess) {
+            onSuccess()
+          }
+        } catch (error) {
+          if (error instanceof Error) {
+            if (onFailure) {
+              onFailure(error.message)
+            }
+          }
+        }
+      }}
       className="flex flex-col gap-2 w-full items-center"
     >
       <InputField
@@ -40,7 +49,6 @@ export default function SignInForm() {
         minLength={8}
         maxLength={32}
       />
-      <div>{errorMessage && <p className="text-red-500">{errorMessage}</p>}</div>
       <PrimaryButton justify="justify-center" type="submit">Sign in</PrimaryButton>
     </form>
   )

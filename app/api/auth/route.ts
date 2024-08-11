@@ -5,6 +5,9 @@ import { ZodError } from "zod"
 import { Session } from "@/types"
 import { sign } from "@/lib/jwt"
 
+/**
+ * Create a new session for the user with the provided credentials.
+ */
 export async function POST(request: Request) {
   try {
     const body = await request.json()

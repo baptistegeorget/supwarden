@@ -8,14 +8,15 @@ const base64Schema = zod.string().regex(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).b
 const objectIdSchema = zod.string().regex(/^[a-fA-F0-9]{24}$/)
 const urlSchema = zod.string().url()
 
-export const signInSchema = zod.object({
-  email: emailSchema,
-  password: passwordSchema,
-})
-
 export const signUpSchema = zod.object({
   firstName: shortStringSchema,
   lastName: shortStringSchema,
+  email: emailSchema,
+  password: passwordSchema,
+  passwordConfirmation: passwordSchema
+})
+
+export const signInSchema = zod.object({
   email: emailSchema,
   password: passwordSchema,
 })

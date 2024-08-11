@@ -4,6 +4,9 @@ import { hashPassword } from "@/lib/password"
 import { ZodError } from "zod"
 import { FolderModel, UserModel } from "@/types"
 
+/**
+ * Create a new user account and personal folder for the user.
+ */
 export async function POST(request: Request) {
   try {
     const body = await request.json()

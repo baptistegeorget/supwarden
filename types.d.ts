@@ -1,44 +1,49 @@
 import { ObjectId } from "mongodb"
 
+/**
+ * Type User for the database
+ */
 export type UserModel = {
-  // Properties
   lastName: string,
   firstName: string,
   email: string,
   password: string,
   pin?: string,
-  status: "active" | "deleted",
-  // Metadata
+  status: "active" | "disabled" | "deleted",
   createdOn: string,
   modifiedOn: string,
 }
 
+/**
+ * Type Folder for the database
+ */
 export type FolderModel = {
-  // Properties
   name: string,
   type: "personal" | "shared",
   memberIds: string[],
-  // Metadata
   creatorId: ObjectId,
   createdOn: string,
   modifierId: ObjectId,
   modifiedOn: string,
 }
 
+/**
+ * Type Invitation for the database
+ */
 export type InvitationModel = {
-  // Properties
   folderId: ObjectId,
   userId: ObjectId,
   status: "pending" | "accepted" | "rejected",
-  // Metadata
   creatorId: ObjectId,
   createdOn: string,
   modifierId: ObjectId,
   modifiedOn: string,
 }
 
+/**
+ * Type Element for the database
+ */
 export type ElementModel = {
-  // Properties
   folderId: ObjectId,
   name: string,
   identifier?: string,
@@ -47,8 +52,7 @@ export type ElementModel = {
   note?: string,
   customFields: { type: "visible" | "hidden" | "attachment", value: string }[],
   idsOfMembersWhoCanEdit: string[],
-  isSensitive?: boolean,
-  // Metadata
+  isSensitive: boolean,
   creatorId: ObjectId,
   createdOn: string,
   modifierId: ObjectId,
