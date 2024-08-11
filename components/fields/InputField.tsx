@@ -1,3 +1,5 @@
+"use client"
+
 import { HTMLInputTypeAttribute } from "react"
 
 export default function InputField({
