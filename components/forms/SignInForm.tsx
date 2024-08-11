@@ -1,8 +1,8 @@
 "use client"
 
 import { signIn } from "@/lib/auth"
-import InputField from "@/components/fields/input"
-import PrimaryButton from "@/components/buttons/primary"
+import InputField from "@/components/fields/InputField"
+import PrimaryButton from "@/components/buttons/PrimaryButton"
 
 export default function SignInForm({
   onSuccess,
@@ -49,7 +49,7 @@ export default function SignInForm({
         minLength={8}
         maxLength={32}
       />
-      <PrimaryButton justify="justify-center" type="submit">Sign in</PrimaryButton>
+      <PrimaryButton type="submit">Sign in</PrimaryButton>
     </form>
   )
 }

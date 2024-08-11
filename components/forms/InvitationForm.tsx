@@ -3,10 +3,12 @@
 import InputField from "@/components/fields/InputField"
 import PrimaryButton from "@/components/buttons/PrimaryButton"
 
-export default function FolderForm({
+export default function InvitationForm({
+  folderId,
   onSuccess,
   onFailure
 }: {
+  folderId: string,
   onSuccess?: () => void,
   onFailure?: (error: string) => void
 }) {
@@ -17,10 +19,10 @@ export default function FolderForm({
         const form = event.currentTarget
         const formData = new FormData(form)
         const body = Object.fromEntries(formData.entries())
-        const response = await fetch("/api/folders", {
+        const response = await fetch(`/api/invitations?folderId=${folderId}`, {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(body)
         })
@@ -38,16 +40,14 @@ export default function FolderForm({
       }}
       className="flex flex-col gap-2 w-full items-center"
     >
-      <div className="flex gap-2 w-full">
+      <div className="flex gap-2">
         <InputField
-          type="text"
-          name="name"
-          placeholder="Enter folder name"
+          type="email"
+          name="email"
+          placeholder="Enter user email"
           required
-          minLength={1}
-          maxLength={32}
         />
-        <PrimaryButton type="submit">Add</PrimaryButton>
+        <PrimaryButton type="submit">Send</PrimaryButton>
       </div>
     </form>
   )
