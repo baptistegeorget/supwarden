@@ -170,8 +170,6 @@ export async function getInvitationById(id: string) {
   return invitation
 }
 
-// Other getters
-
 export async function getUserByCredentials(email: string, password: string) {
   const client = await clientPromise
 
@@ -189,9 +187,21 @@ export async function getFoldersByUserId(userId: string) {
 
   const db = client.db()
 
+  const membersCollection = db.collection<MemberModel>("members")
+
+  const members = await membersCollection.find({ userId: new ObjectId(userId) }).toArray()
+
   const foldersCollection = db.collection<FolderModel>("folders")
 
-  const folders = await foldersCollection.find({ memberIds: { $in: [userId] } }).toArray()
+  const folders: WithId<FolderModel>[] = []
+
+  for (const member of members) {
+    const folder = await foldersCollection.findOne({ _id: member.folderId })
+
+    if (folder) {
+      folders.push(folder)
+    }
+  }
 
   return folders
 }

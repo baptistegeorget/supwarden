@@ -1,7 +1,8 @@
-import { createFolder, getFoldersByUserId, getUserById } from "@/lib/db"
+import { createFolder, createMember, getFoldersByUserId, getUserById } from "@/lib/db"
 import { verify } from "@/lib/jwt"
 import { folderSchema } from "@/lib/zod"
-import { FolderModel, Folder, Session } from "@/types"
+import { FolderModel, FolderResponse, MemberModel, SessionResponse, UserModel, UserResponse } from "@/types"
+import { WithId } from "mongodb"
 import { cookies } from "next/headers"
 import { ZodError } from "zod"
 
@@ -13,7 +14,7 @@ export async function POST(request: Request) {
       return Response.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const session = verify<Session>(authToken)
+    const session = verify<SessionResponse>(authToken)
 
     const user = await getUserById(session.user.id)
 
@@ -25,17 +26,27 @@ export async function POST(request: Request) {
 
     const { name } = await folderSchema.parseAsync(body)
 
-    const folder: FolderModel = {
+    const folderModel: FolderModel = {
       name: name,
       type: "shared",
-      memberIds: [user._id.toString()],
       creatorId: user._id,
       createdOn: new Date().toISOString(),
       modifierId: user._id,
       modifiedOn: new Date().toISOString(),
     }
 
-    await createFolder(folder)
+    const folderResult = await createFolder(folderModel)
+
+    const memberModel: MemberModel = {
+      folderId: folderResult.insertedId,
+      userId: user._id,
+      creatorId: user._id,
+      createdOn: new Date().toISOString(),
+      modifierId: user._id,
+      modifiedOn: new Date().toISOString(),
+    }
+
+    await createMember(memberModel)
 
     return Response.json(null, { status: 201 })
   } catch (error) {
@@ -58,7 +69,7 @@ export async function GET() {
       return Response.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const session = verify<Session>(authToken)
+    const session = verify<SessionResponse>(authToken)
 
     const user = await getUserById(session.user.id)
 
@@ -68,36 +79,32 @@ export async function GET() {
 
     const folders = await getFoldersByUserId(user._id.toString())
 
-    const foldersResponse: Folder[] = await Promise.all(folders.map(async (folder) => {
-      const members = await Promise.all(folder.memberIds.map(async (memberId) => await getUserById(memberId)))
+    const foldersResponse: FolderResponse[] = await Promise.all(folders.map(async (folder) => {
+      const creator = await getUserById(folder.creatorId.toString()) as WithId<UserModel>
 
-      const creator = await getUserById(folder.creatorId.toString())
+      const modifier = await getUserById(folder.modifierId.toString()) as WithId<UserModel>
 
-      const modifier = await getUserById(folder.modifierId.toString())
-
-      const folderResponse: Folder = {
+      const folderResponse: FolderResponse = {
         id: folder._id.toString(),
         name: folder.name,
         type: folder.type,
-        members: members.map(member => member ? {
-          id: member._id.toString(),
-          lastName: member.lastName,
-          firstName: member.firstName,
-          email: member.email,
-        } : null),
-        creator: creator ? {
+        creator: {
           id: creator._id.toString(),
           lastName: creator.lastName,
           firstName: creator.firstName,
           email: creator.email,
-        } : null,
+          createdOn: creator.createdOn,
+          modifiedOn: creator.modifiedOn
+        },
         createdOn: folder.createdOn,
-        modifier: modifier ? {
+        modifier: {
           id: modifier._id.toString(),
           lastName: modifier.lastName,
           firstName: modifier.firstName,
           email: modifier.email,
-        } : null,
+          createdOn: modifier.createdOn,
+          modifiedOn: modifier.modifiedOn
+        },
         modifiedOn: folder.modifiedOn
       }
 
