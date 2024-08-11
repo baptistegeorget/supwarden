@@ -1,45 +1,46 @@
-import { boolean, object, string } from "zod"
+import zod from "zod"
 
-export const signInSchema = object({
-  email: string({ required_error: "Email is required" })
-    .min(1, "Email is required")
-    .email("Invalid email"),
-  password: string({ required_error: "Password is required" })
-    .min(1, "Password is required")
-    .min(8, "Password must be more than 8 characters")
-    .max(32, "Password must be less than 32 characters"),
+const emailSchema = zod.string().email()
+const passwordSchema = zod.string().min(8).max(32)
+const shortStringSchema = zod.string().min(1).max(32)
+const longStringSchema = zod.string().min(1).max(512)
+const base64Schema = zod.string().regex(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).base64,/)
+const objectIdSchema = zod.string().regex(/^[a-fA-F0-9]{24}$/)
+const urlSchema = zod.string().url()
+
+export const signInSchema = zod.object({
+  email: emailSchema,
+  password: passwordSchema,
 })
 
-export const signUpSchema = object({
-  firstName: string({ required_error: "First name is required" })
-    .min(1, "First name is required")
-    .max(32, "First name must be less than 32 characters"),
-  lastName: string({ required_error: "Last name is required" })
-    .min(1, "Last name is required")
-    .max(32, "Last name must be less than 32 characters"),
-  email: string({ required_error: "Email is required" })
-    .min(1, "Email is required")
-    .email("Invalid email"),
-  password: string({ required_error: "Password is required" })
-    .min(1, "Password is required")
-    .min(8, "Password must be more than 8 characters")
-    .max(32, "Password must be less than 32 characters"),
+export const signUpSchema = zod.object({
+  firstName: shortStringSchema,
+  lastName: shortStringSchema,
+  email: emailSchema,
+  password: passwordSchema,
 })
 
-export const folderSchema = object({
-  name: string({ required_error: "Name is required" })
-    .min(1, "Name is required")
-    .max(32, "Name must be less than 32 characters"),
+export const folderSchema = zod.object({
+  name: shortStringSchema,
 })
 
-export const invitationSchema = object({
-  email: string({ required_error: "Email is required" })
-    .min(1, "Email is required")
-    .email("Invalid email"),
-  folderId: string({ required_error: "Folder ID is required" })
-    .min(1, "Folder ID is required"),
+export const invitationSchema = zod.object({
+  email: emailSchema,
+  folderId: objectIdSchema,
 })
 
-export const invitationResponseSchema = object({
-  isAccepted: boolean({ required_error: "Response is required" }),
+const customFieldSchema = zod.object({ 
+  type: zod.enum(["visible", "hidden", "attachment"]),
+  value: zod.union([shortStringSchema, base64Schema]),
+})
+
+export const elementSchema = zod.object({
+  name: shortStringSchema,
+  identifier: shortStringSchema.optional(),
+  password: passwordSchema.optional(),
+  urls: zod.array(urlSchema).optional(),
+  note: longStringSchema.optional(),
+  customFields: zod.array(customFieldSchema).optional(),
+  idsOfMembersWhoCanEdit: zod.array(objectIdSchema).optional(),
+  isSensitive: zod.boolean().optional(),
 })

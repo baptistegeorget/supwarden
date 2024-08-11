@@ -1,5 +1,5 @@
 import clientPromise from "@/lib/mongodb"
-import { FolderModel, InvitationModel, UserModel } from "@/types"
+import { ElementModel, FolderModel, InvitationModel, UserModel } from "@/types"
 import { ObjectId, WithId } from "mongodb"
 
 // Checks
@@ -66,6 +66,18 @@ export async function createInvitation(invitation: InvitationModel) {
   const invitationsCollection = db.collection<InvitationModel>("invitations")
 
   const result = await invitationsCollection.insertOne(invitation)
+
+  return result
+}
+
+export async function createElement(element: ElementModel) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const elementsCollection = db.collection<ElementModel>("elements")
+
+  const result = await elementsCollection.insertOne(element)
 
   return result
 }
@@ -182,4 +194,16 @@ export async function getPendingInvitationsByUserId(userId: string) {
   const invitations = await invitationsCollection.find({ userId: new ObjectId(userId), status: "pending" }).toArray()
 
   return invitations
+}
+
+export async function getElementsByFolderId(folderId: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const elementsCollection = db.collection<ElementModel>("elements")
+
+  const elements = await elementsCollection.find({ folderId: new ObjectId(folderId) }).toArray()
+
+  return elements
 }
