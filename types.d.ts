@@ -50,7 +50,6 @@ export type MemberModel = {
 
 export type MemberResponse = {
   id: string,
-  folder: FolderResponse,
   user: UserResponse,
   creator: UserResponse,
   createdOn: string,

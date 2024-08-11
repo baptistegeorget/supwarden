@@ -241,3 +241,15 @@ export async function getElementsByFolderId(folderId: string) {
 
   return elements
 }
+
+export async function getMembersByFolderId(folderId: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const membersCollection = db.collection<MemberModel>("members")
+
+  const members = await membersCollection.find({ folderId: new ObjectId(folderId) }).toArray()
+
+  return members
+}
