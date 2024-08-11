@@ -15,7 +15,7 @@ export default function SignUpPage() {
     async function getSession() {
       const session = await auth()
       if (session) {
-        return router.push("/signin")
+        return router.push("/")
       }
     }
     getSession()
