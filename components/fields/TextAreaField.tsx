@@ -23,7 +23,7 @@ export default function TextAreaField({
     <div className="flex flex-col gap-1 w-full">
       {label && <label htmlFor={name}>{label}</label>}
       <textarea
-        className="resize-none py-1 px-2 rounded border border-neutral-700 bg-transparent h-32 w-auto"
+        className="resize-none py-1 px-2 rounded border border-neutral-700 bg-transparent h-32 w-full"
         name={name}
         placeholder={placeholder}
         required={required}

@@ -40,7 +40,7 @@ export default function InputField({
     <div className="flex flex-col gap-1 w-full">
       {label && <label htmlFor={name}>{required && "*"}{label}</label>}
       <input
-        className="py-1 px-2 rounded border border-neutral-700 bg-transparent w-auto"
+        className="py-1 px-2 rounded border border-neutral-700 bg-transparent w-full"
         type={type}
         name={name}
         placeholder={placeholder}
