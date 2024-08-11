@@ -8,7 +8,11 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
 
-    const { email, password, firstName, lastName } = await signUpSchema.parseAsync(body)
+    const { firstName, lastName, email, password, passwordConfirmation } = await signUpSchema.parseAsync(body)
+
+    if (password !== passwordConfirmation) {
+      return Response.json({ error: "Passwords do not match" }, { status: 400 })
+    }
 
     const emailIsUsed = await checkEmailIsUsed(email)
 
