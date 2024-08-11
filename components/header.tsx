@@ -9,7 +9,7 @@ export default function Header({
   session: Session
 }) {
   return (
-    <header className="h-20 min-h-20 flex border-b border-neutral-700 items-center px-20 justify-between">
+    <header className="flex border-b border-neutral-700 items-center px-20 py-4 justify-between">
       <Link href="/"><h1 className="text-center text-2xl font-bold">SUPWARDEN</h1></Link>
       <div className="flex gap-2">
         <p>{session.user.firstName} {session.user.lastName}</p>
