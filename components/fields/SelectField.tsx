@@ -5,6 +5,7 @@ export default function SelectField({
   name,
   options,
   optionSelected,
+  disabled,
   onChange,
   multiple
 }: {
@@ -12,6 +13,7 @@ export default function SelectField({
   name: string,
   options: string[],
   optionSelected?: string,
+  disabled?: boolean,
   onChange?: (value: string) => void,
   multiple?: boolean
 }) {
@@ -30,6 +32,7 @@ export default function SelectField({
             value={option}
             className="bg-black"
             selected={option === optionSelected}
+            disabled={disabled}
           >
             {option}
           </option>

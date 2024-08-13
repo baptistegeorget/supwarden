@@ -11,6 +11,8 @@ export default function InputField({
   minLength,
   maxLength,
   value,
+  readOnly,
+  disabled,
   onChange
 }: {
   label?: string,
@@ -21,6 +23,8 @@ export default function InputField({
   minLength?: number,
   maxLength?: number,
   value?: string,
+  readOnly?: boolean,
+  disabled?: boolean,
   onChange?: (value: string | File | null) => void
 }) {
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -49,6 +53,8 @@ export default function InputField({
         maxLength={maxLength}
         value={value}
         onChange={handleChange}
+        readOnly={readOnly}
+        disabled={disabled}
       />
     </div>
   )

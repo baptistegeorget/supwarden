@@ -8,6 +8,8 @@ export default function TextAreaField({
   minLength,
   maxLength,
   value,
+  readOnly,
+  disabled,
   onChange
 }: {
   label?: string,
@@ -17,6 +19,8 @@ export default function TextAreaField({
   minLength?: number,
   maxLength?: number,
   value?: string,
+  readOnly?: boolean,
+  disabled?: boolean,
   onChange?: (value: string) => void
 }) {
   return (
@@ -31,6 +35,8 @@ export default function TextAreaField({
         maxLength={maxLength}
         value={value}
         onChange={e => onChange && onChange(e.target.value)}
+        readOnly={readOnly}
+        disabled={disabled}
       />
     </div>
   )
