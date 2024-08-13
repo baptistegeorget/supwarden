@@ -4,7 +4,7 @@ import InvitationsPopup from "@/components/popups/InvitationsPopup"
 import { InvitationResponse } from "@/types"
 import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
-import { useNotification } from "../providers/NotificationProvider"
+import { useNotification } from "@/components/providers/NotificationProvider"
 
 export default function InvitationsPopupButton() {
   const notify = useNotification()
