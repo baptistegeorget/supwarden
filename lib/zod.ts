@@ -21,9 +21,18 @@ export const invitationSchema = zod.object({
   email: zod.string().email()
 })
 
-const customFieldSchema = zod.object({ 
+const customFieldSchema = zod.object({
   type: zod.enum(["visible", "hidden", "attachment"]),
-  value: zod.union([zod.string().min(1).max(32), zod.string().regex(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).base64,/)])
+  value: zod.union([
+    zod.string().min(1).max(32),
+    zod.string().regex(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).base64,/)
+  ])
+}).refine((data) => {
+  if (data.type === "attachment") {
+    return zod.string().regex(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).base64,/).safeParse(data.value).success;
+  } else {
+    return zod.string().min(1).max(32).safeParse(data.value).success;
+  }
 })
 
 export const elementSchema = zod.object({
