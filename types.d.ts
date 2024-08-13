@@ -96,7 +96,6 @@ export type ElementModel = {
 
 export type ElementResponse = {
   id: string,
-  folder: FolderResponse,
   name: string,
   identifier?: string,
   password?: string,

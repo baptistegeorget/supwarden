@@ -8,7 +8,7 @@ export default function RootLayout({
 }>) {
   return (
     <NotificationProvider>
-      <html lang="en" className="h-full w-full">
+      <html lang="en" className="h-full w-full min-w-[72rem]">
         <body className="h-full w-full bg-black text-white flex flex-col">
           {children}
         </body>

@@ -37,10 +37,10 @@ const customFieldSchema = zod.object({
 
 export const elementSchema = zod.object({
   name: zod.string().min(1).max(32),
-  identifier: zod.string().min(1).max(32).optional(),
-  password: zod.string().min(8).max(32).optional(),
+  identifier: zod.string().max(32).optional(),
+  password: zod.string().max(32).optional(),
   urls: zod.array(zod.string().url()).optional(),
-  note: zod.string().min(1).max(512).optional(),
+  note: zod.string().max(512).optional(),
   customFields: zod.array(customFieldSchema).optional(),
   idsOfMembersWhoCanEdit: zod.array(zod.string().regex(/^[a-fA-F0-9]{24}$/)).optional(),
   isSensitive: zod.boolean().optional()

@@ -36,13 +36,6 @@ export default function HomePage() {
     getFolders()
   }, [session])
 
-  useEffect(() => {
-    if (selectedFolder) {
-      getMembers(selectedFolder.id)
-      getElements(selectedFolder.id)
-    }
-  }, [selectedFolder])
-
   async function getSession(router: AppRouterInstance) {
     const session = await auth()
     if (session) {
@@ -117,6 +110,8 @@ export default function HomePage() {
             onSelect={(folder) => {
               setSelectedFolder(folder)
               setRightPanelView("member")
+              getMembers(folder.id)
+              getElements(folder.id)
             }}
           />
         </aside>
@@ -155,13 +150,19 @@ export default function HomePage() {
               <ElementForm
                 mode={elementFormMode}
                 folderId={selectedFolder.id}
-                elementId={selectedElement?.id}
+                element={selectedElement ? selectedElement : undefined}
                 onSuccess={() => {
                   notify("Element created successfully", "success")
+                  setElementFormMode("view")
                   getElements(selectedFolder.id)
                 }}
                 onFailure={(error) => notify(error, "error")}
               />
+            )}
+            {rightPanelView === "message" && (
+              <div className="flex-1 flex items-center justify-center">
+                <p className="text-neutral-500">No message</p>
+              </div>
             )}
           </aside>
         )}
