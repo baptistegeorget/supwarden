@@ -170,6 +170,18 @@ export async function getInvitationById(id: string) {
   return invitation
 }
 
+export async function getMemberById(id: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const membersCollection = db.collection<MemberModel>("members")
+
+  const member = await membersCollection.findOne({ _id: new ObjectId(id) })
+
+  return member
+}
+
 export async function getUserByCredentials(email: string, password: string) {
   const client = await clientPromise
 
@@ -254,7 +266,7 @@ export async function getMembersByFolderId(folderId: string) {
   return members
 }
 
-export async function getMember(userId: string, folderId: string) {
+export async function getMemberByInformations(userId: string, folderId: string) {
   const client = await clientPromise
 
   const db = client.db()

@@ -78,6 +78,11 @@ export type InvitationResponse = {
   modifiedOn: string
 }
 
+export type CustomField = {
+  type: "visible" | "hidden" | "attachment",
+  value: string | { name: string, data: string }
+}
+
 export type ElementModel = {
   folderId: ObjectId,
   name: string,
@@ -85,7 +90,7 @@ export type ElementModel = {
   password?: string,
   urls?: string[],
   note?: string,
-  customFields?: { type: "visible" | "hidden" | "attachment", value: string }[],
+  customFields?: CustomField[],
   idsOfMembersWhoCanEdit?: string[],
   isSensitive?: boolean,
   creatorId: ObjectId,
@@ -101,8 +106,8 @@ export type ElementResponse = {
   password?: string,
   urls?: string[],
   note?: string,
-  customFields?: { type: "visible" | "hidden" | "attachment", value: string }[],
-  membersWhoCanEdit?: UserResponse[],
+  customFields?: CustomField[],
+  membersWhoCanEdit?: MemberResponse[],
   isSensitive?: boolean,
   creator: UserResponse,
   createdOn: string,

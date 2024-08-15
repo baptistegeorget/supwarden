@@ -1,47 +1,51 @@
-import zod from "zod"
+import { z } from "zod"
 
-export const signUpSchema = zod.object({
-  firstName: zod.string().min(1).max(32),
-  lastName: zod.string().min(1).max(32),
-  email: zod.string().email(),
-  password: zod.string().min(8).max(32),
-  passwordConfirmation: zod.string().min(8).max(32)
+export const signUpSchema = z.object({
+  firstName: z.string().min(1).max(32),
+  lastName: z.string().min(1).max(32),
+  email: z.string().email(),
+  password: z.string().min(8).max(32),
+  passwordConfirmation: z.string().min(8).max(32)
 })
 
-export const signInSchema = zod.object({
-  email: zod.string().email(),
-  password: zod.string().min(8).max(32)
+export const signInSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8).max(32)
 })
 
-export const folderSchema = zod.object({
-  name: zod.string().min(1).max(32)
+export const folderSchema = z.object({
+  name: z.string().min(1).max(32)
 })
 
-export const invitationSchema = zod.object({
-  email: zod.string().email()
+export const invitationSchema = z.object({
+  email: z.string().email()
 })
 
-const customFieldSchema = zod.object({
-  type: zod.enum(["visible", "hidden", "attachment"]),
-  value: zod.union([
-    zod.string().min(1).max(32),
-    zod.string().regex(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).base64,/)
+const fileSchema = z.object({
+  name: z.string().min(1).max(256),
+  data: z.string().regex(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).base64/)
+})
+
+const customFieldSchema = z.object({
+  type: z.enum(["visible", "hidden", "attachment"]),
+  value: z.union([
+    z.string().min(1).max(32),
+    fileSchema
   ])
 }).refine((data) => {
   if (data.type === "attachment") {
-    return zod.string().regex(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).base64,/).safeParse(data.value).success;
-  } else {
-    return zod.string().min(1).max(32).safeParse(data.value).success;
+    return fileSchema.safeParse(data.value).success;
   }
+  return z.string().safeParse(data.value).success;
 })
 
-export const elementSchema = zod.object({
-  name: zod.string().min(1).max(32),
-  identifier: zod.string().max(32).optional(),
-  password: zod.string().max(32).optional(),
-  urls: zod.array(zod.string().url()).optional(),
-  note: zod.string().max(512).optional(),
-  customFields: zod.array(customFieldSchema).optional(),
-  idsOfMembersWhoCanEdit: zod.array(zod.string().regex(/^[a-fA-F0-9]{24}$/)).optional(),
-  isSensitive: zod.boolean().optional()
+export const elementSchema = z.object({
+  name: z.string().min(1).max(32),
+  identifier: z.string().max(32).optional(),
+  password: z.string().max(32).optional(),
+  urls: z.array(z.string().url()).optional(),
+  note: z.string().max(512).optional(),
+  customFields: z.array(customFieldSchema).optional(),
+  idsOfMembersWhoCanEdit: z.array(z.string().regex(/^[a-fA-F0-9]{24}$/)).optional(),
+  isSensitive: z.boolean().optional()
 })
