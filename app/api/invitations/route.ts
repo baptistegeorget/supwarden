@@ -1,4 +1,4 @@
-import { createInvitation, getFolderById, getPendingInvitationsByUserId, getUserByEmail, getUserById, checkPendingInvitationExist, getMember, getInvitationById, createMember, updateInvitation } from "@/lib/db"
+import { createInvitation, getFolderById, getPendingInvitationsByUserId, getUserByEmail, getUserById, checkPendingInvitationExist, getMemberByInformations, getInvitationById, createMember, updateInvitation } from "@/lib/db"
 import { verify } from "@/lib/jwt"
 import { invitationSchema } from "@/lib/zod"
 import { InvitationResponse, InvitationModel, SessionResponse, UserModel, FolderModel } from "@/types"
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: "User not found" }, { status: 404 })
     }
 
-    const member = await getMember(userToInvite._id.toString(), folder._id.toString())
+    const member = await getMemberByInformations(userToInvite._id.toString(), folder._id.toString())
 
     if (member) {
       return Response.json({ error: "User is already a member of this folder" }, { status: 400 })
@@ -239,7 +239,7 @@ export async function PATCH(request: NextRequest) {
       return Response.json({ error: "Folder not found" }, { status: 404 })
     }
 
-    const member = await getMember(user._id.toString(), folder._id.toString())
+    const member = await getMemberByInformations(user._id.toString(), folder._id.toString())
 
     if (!member && status === "accepted") {
       await createMember({
@@ -253,6 +253,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     invitation.status = status
+    invitation.modifierId = user._id
+    invitation.modifiedOn = new Date().toISOString()
 
     await updateInvitation(invitation)
 
