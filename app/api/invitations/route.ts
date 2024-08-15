@@ -241,7 +241,7 @@ export async function PATCH(request: NextRequest) {
 
     const member = await getMember(user._id.toString(), folder._id.toString())
 
-    if (!member) {
+    if (!member && status === "accepted") {
       await createMember({
         userId: user._id,
         folderId: folder._id,
