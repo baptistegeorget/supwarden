@@ -181,20 +181,25 @@ export default function PasswordGenerator({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center relative">
-        <input
-          className="py-1 px-2 rounded border border-neutral-700 bg-transparent w-96"
-          type="text"
-          value={password}
-        />
-        <button
-          className="absolute right-2"
-          onClick={async () => {
-            await navigator.clipboard.writeText(password)
-            notify("Password copied to clipboard", "success")
-          }}
-        >
-          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.503 4.627 5.5 6.75v10.504a3.25 3.25 0 0 0 3.25 3.25h8.616a2.251 2.251 0 0 1-2.122 1.5H8.75A4.75 4.75 0 0 1 4 17.254V6.75c0-.98.627-1.815 1.503-2.123ZM17.75 2A2.25 2.25 0 0 1 20 4.25v13a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-13A2.25 2.25 0 0 1 8.75 2h9Z" fill="#404040" /></svg>
+      <div className="flex gap-2 items-center">
+        <div className="flex items-center relative">
+          <input
+            className="py-1 px-2 rounded border border-neutral-700 bg-transparent w-96"
+            type="text"
+            value={password}
+          />
+          <button
+            className="absolute right-2"
+            onClick={async () => {
+              await navigator.clipboard.writeText(password)
+              notify("Password copied to clipboard", "success")
+            }}
+          >
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.503 4.627 5.5 6.75v10.504a3.25 3.25 0 0 0 3.25 3.25h8.616a2.251 2.251 0 0 1-2.122 1.5H8.75A4.75 4.75 0 0 1 4 17.254V6.75c0-.98.627-1.815 1.503-2.123ZM17.75 2A2.25 2.25 0 0 1 20 4.25v13a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-13A2.25 2.25 0 0 1 8.75 2h9Z" fill="#404040" /></svg>
+          </button>
+        </div>
+        <button onClick={() => generatePassword()}>
+          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16.052 5.029a1 1 0 0 0 .189 1.401 7.002 7.002 0 0 1-3.157 12.487l.709-.71a1 1 0 0 0-1.414-1.414l-2.5 2.5a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 1.414-1.414l-.843-.842A9.001 9.001 0 0 0 17.453 4.84a1 1 0 0 0-1.401.189Zm-1.93-1.736-2.5-2.5a1 1 0 0 0-1.498 1.32l.083.094.843.843a9.001 9.001 0 0 0-4.778 15.892A1 1 0 0 0 7.545 17.4a7.002 7.002 0 0 1 3.37-12.316l-.708.709a1 1 0 0 0 1.32 1.497l.094-.083 2.5-2.5a1 1 0 0 0 .083-1.32l-.083-.094Z" fill="#ffffff" /></svg>
         </button>
       </div>
       <div className="flex flex-col gap-2">
