@@ -1,7 +1,7 @@
-import { createElement, getElementsByFolderId, getFolderById, getMembersByFolderId, getUserById } from "@/lib/db"
+import { createElement, getElementsByFolderId, getFolderById, getMemberById, getMembersByFolderId, getUserById } from "@/lib/db"
 import { verify } from "@/lib/jwt"
 import { elementSchema } from "@/lib/zod"
-import { ElementResponse, ElementModel, SessionResponse, UserModel, UserResponse } from "@/types"
+import { ElementResponse, ElementModel, SessionResponse, UserModel, UserResponse, MemberModel, MemberResponse } from "@/types"
 import { WithId } from "mongodb"
 import { cookies } from "next/headers"
 import { NextRequest } from "next/server"
@@ -128,17 +128,45 @@ export async function GET(request: NextRequest) {
     const elements = await getElementsByFolderId(folder._id.toString())
 
     const elementsResponse: ElementResponse[] = await Promise.all(elements.map(async (element) => {
-      let membersWhoCanEdit: UserResponse[] | undefined = undefined
+      let membersWhoCanEdit: MemberResponse[] | undefined = undefined
 
       if (element.idsOfMembersWhoCanEdit) {
         membersWhoCanEdit = await Promise.all(element.idsOfMembersWhoCanEdit.map(async (id) => {
-          const member = await getUserById(id) as WithId<UserModel>
+          const member = await getMemberById(id) as WithId<MemberModel>
+
+          const user = await getUserById(member.userId.toString()) as WithId<UserModel>
+
+          const creator = await getUserById(member.creatorId.toString()) as WithId<UserModel>
+
+          const modifier = await getUserById(member.modifierId.toString()) as WithId<UserModel>
+
           return {
             id: member._id.toString(),
-            lastName: member.lastName,
-            firstName: member.firstName,
-            email: member.email,
+            user: {
+              id: user._id.toString(),
+              lastName: user.lastName,
+              firstName: user.firstName,
+              email: user.email,
+              createdOn: user.createdOn,
+              modifiedOn: user.modifiedOn
+            },
+            creator: {
+              id: creator._id.toString(),
+              lastName: creator.lastName,
+              firstName: creator.firstName,
+              email: creator.email,
+              createdOn: creator.createdOn,
+              modifiedOn: creator.modifiedOn
+            },
             createdOn: member.createdOn,
+            modifier: {
+              id: modifier._id.toString(),
+              lastName: modifier.lastName,
+              firstName: modifier.firstName,
+              email: modifier.email,
+              createdOn: modifier.createdOn,
+              modifiedOn: modifier.modifiedOn
+            },
             modifiedOn: member.modifiedOn
           }
         }))
