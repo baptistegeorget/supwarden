@@ -25,11 +25,11 @@ export default function InputField({
   value?: string,
   readOnly?: boolean,
   disabled?: boolean,
-  onChange?: (value: string | File | null) => void
+  onChange?: (value: string | FileList | null) => void
 }) {
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (type === 'file') {
-      const file = e.target.files ? e.target.files[0] : null
+      const file = e.target.files ? e.target.files : null
       if (onChange) {
         onChange(file)
       }
@@ -42,7 +42,7 @@ export default function InputField({
 
   return (
     <div className="flex flex-col gap-1 w-full">
-      {label && <label htmlFor={name}>{required && "*"}{label}</label>}
+      {label && <label htmlFor={name}>{required && !readOnly && !disabled && "*"}{label}</label>}
       <input
         className="py-1 px-2 rounded border border-neutral-700 bg-transparent w-full"
         type={type}

@@ -25,7 +25,7 @@ export default function TextAreaField({
 }) {
   return (
     <div className="flex flex-col gap-1 w-full">
-      {label && <label htmlFor={name}>{label}</label>}
+      {label && <label htmlFor={name}>{required && !readOnly && !disabled && "*"}{label}</label>}
       <textarea
         className="resize-none py-1 px-2 rounded border border-neutral-700 bg-transparent h-32 w-full"
         name={name}

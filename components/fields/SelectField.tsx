@@ -3,36 +3,39 @@
 export default function SelectField({
   label,
   name,
+  required,
   options,
-  optionSelected,
+  optionsSelected,
   disabled,
   onChange,
   multiple
 }: {
   label?: string,
   name: string,
+  required?: boolean,
   options: string[],
-  optionSelected?: string,
+  optionsSelected?: string[],
   disabled?: boolean,
-  onChange?: (value: string) => void,
+  onChange?: (value: string[]) => void,
   multiple?: boolean
 }) {
   return (
     <div className="flex flex-col gap-1 w-full">
-      <label htmlFor={name}>{label}</label>
+      <label htmlFor={name}>{required && !disabled && "*"}{label}</label>
       <select
         className="py-1 px-2 rounded border border-neutral-700 bg-transparent w-full"
         name={name}
         multiple={multiple}
-        onChange={event => onChange && onChange(event.target.value)}
+        onChange={event => onChange && onChange(Array.from(event.target.selectedOptions, option => option.value))}
+        value={optionsSelected}
+        required={required}
+        disabled={disabled}
       >
         {options.map((option, index) => (
           <option
             key={index}
             value={option}
             className="bg-black"
-            selected={option === optionSelected}
-            disabled={disabled}
           >
             {option}
           </option>
