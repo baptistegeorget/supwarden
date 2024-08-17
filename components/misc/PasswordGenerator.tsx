@@ -1,7 +1,6 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { useNotification } from "@/components/providers/NotificationProvider"
 
 export default function PasswordGenerator({
   minLength = 1,
@@ -28,7 +27,6 @@ export default function PasswordGenerator({
   digits?: string,
   symbols?: string
 }) {
-  const notify = useNotification()
   const [length, setLength] = useState<number>(defaultLength)
   const [minUppercase, setMinUppercase] = useState<number>(defaultMinUppercase)
   const [minLowercase, setMinLowercase] = useState<number>(defaultMinLowercase)
@@ -190,10 +188,7 @@ export default function PasswordGenerator({
           />
           <button
             className="absolute right-2"
-            onClick={async () => {
-              await navigator.clipboard.writeText(password)
-              notify("Password copied to clipboard", "success")
-            }}
+            onClick={async () => await navigator.clipboard.writeText(password)}
           >
             <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.503 4.627 5.5 6.75v10.504a3.25 3.25 0 0 0 3.25 3.25h8.616a2.251 2.251 0 0 1-2.122 1.5H8.75A4.75 4.75 0 0 1 4 17.254V6.75c0-.98.627-1.815 1.503-2.123ZM17.75 2A2.25 2.25 0 0 1 20 4.25v13a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-13A2.25 2.25 0 0 1 8.75 2h9Z" fill="#404040" /></svg>
           </button>
