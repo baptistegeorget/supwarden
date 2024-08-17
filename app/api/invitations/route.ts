@@ -35,12 +35,14 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: "Folder not found" }, { status: 404 })
     }
 
-    if (folder.creatorId.toString() !== user._id.toString()) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 })
-    }
-
     if (folder.type === "personal") {
       return Response.json({ error: "You can't invite users to your personal folder" }, { status: 400 })
+    }
+
+    const member = await getMemberByInformations(user._id.toString(), folder._id.toString())
+
+    if (!member) {
+      return Response.json({ error: "You need to be a member of this folder to invite users" }, { status: 400 })
     }
 
     const body = await request.json()
@@ -53,9 +55,10 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: "User not found" }, { status: 404 })
     }
 
-    const member = await getMemberByInformations(userToInvite._id.toString(), folder._id.toString())
+    const isMember = !!await getMemberByInformations(userToInvite._id.toString(), folder._id.toString())
 
-    if (member) {
+
+    if (isMember) {
       return Response.json({ error: "User is already a member of this folder" }, { status: 400 })
     }
 
