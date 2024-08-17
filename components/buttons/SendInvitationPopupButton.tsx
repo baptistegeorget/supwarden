@@ -14,7 +14,7 @@ export default function SendInvitationPopupButton({
 
   return (
     <>
-      <PrimaryButton onClick={() => setIsInvitationFormPopupVisible(true)}>Share</PrimaryButton>
+      <PrimaryButton type="button" onClick={() => setIsInvitationFormPopupVisible(true)}>Share</PrimaryButton>
       {isInvitationFormPopupVisible &&
         createPortal(
           <InvitationFormPopup

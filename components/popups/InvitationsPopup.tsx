@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 export default function InvitationsPopup({
   onClose
 }: {
-  onClose: () => void
+  onClose?: () => void
 }) {
   const [invitations, setInvitations] = useState<InvitationResponse[]>([])
 
