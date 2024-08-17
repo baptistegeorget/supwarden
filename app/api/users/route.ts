@@ -1,7 +1,7 @@
 import { signUpSchema } from "@/lib/zod"
-import { checkEmailIsUsed, createFolder, createUser } from "@/lib/db"
+import { checkEmailIsUsed, createFolder, createMember, createUser } from "@/lib/db"
 import { ZodError } from "zod"
-import { FolderModel, UserModel, UserResponse } from "@/types"
+import { FolderModel, MemberModel, UserModel, UserResponse } from "@/types"
 import { createHash } from "crypto"
 
 export async function POST(request: Request) {
@@ -48,7 +48,15 @@ export async function POST(request: Request) {
       modifiedOn: new Date().toISOString()
     }
 
-    await createFolder(folderModel)
+    const folder = await createFolder(folderModel)
+
+    // Add the user to the folder
+    const memberModel: MemberModel = {
+      folder: folder.insertedId,
+      user: user.insertedId
+    }
+
+    await createMember(memberModel)
 
     // Return the response
     const userResponse: UserResponse = {
