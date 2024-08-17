@@ -33,15 +33,11 @@ export default function FolderForm({
 
       form.reset()
 
-      if (onSuccess) {
-        onSuccess(message)
-      }
+      if (onSuccess) onSuccess(message)
     } else {
       const { error }: { error: string } = await response.json()
       
-      if (onFailure) {
-        onFailure(error)
-      }
+      if (onFailure) onFailure(error)
     }
   }
 
