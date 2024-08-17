@@ -29,7 +29,7 @@ export default function SignUpPage() {
             notify(successMessage, "success")
             router.push("/signin")
           }}
-          onFailure={(error) => notify(error, "error")}
+          onFailure={(errorMessage) => notify(errorMessage, "error")}
         />
         <Link href="/signin" className="text-center text-blue-600">I have an account</Link>
       </main>
