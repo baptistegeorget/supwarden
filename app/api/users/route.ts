@@ -1,68 +1,115 @@
 import { signUpSchema } from "@/lib/zod"
-import { checkEmailIsUsed, createFolder, createMember, createUser } from "@/lib/db"
+import { checkEmailIsUsed, createFolder, createUser } from "@/lib/db"
 import { hashPassword } from "@/lib/password"
 import { ZodError } from "zod"
-import { FolderModel, MemberModel, UserModel } from "@/types"
+import { FolderModel, UserModel, UserResponse } from "@/types"
 
 export async function POST(request: Request) {
   try {
+    // Get and parse the body
     const body = await request.json()
+    const data = await signUpSchema.parseAsync(body)
 
-    const { firstName, lastName, email, password, passwordConfirmation } = await signUpSchema.parseAsync(body)
-
-    if (password !== passwordConfirmation) {
-      return Response.json({ error: "Passwords do not match" }, { status: 400 })
-    }
-
-    const emailIsUsed = await checkEmailIsUsed(email)
+    // Check if the email is already used
+    const emailIsUsed = await checkEmailIsUsed(data.email)
 
     if (emailIsUsed) {
-      return Response.json({ error: "Email is already used" }, { status: 400 })
+      return new Response(
+        JSON.stringify({
+          error: "The email is already used"
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
     }
 
+    // Create the user
     const userModel: UserModel = {
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      password: hashPassword(password),
-      status: "active",
+      name: data.name,
+      email: data.email,
+      password: hashPassword(data.password),
       createdOn: new Date().toISOString(),
       modifiedOn: new Date().toISOString()
     }
 
-    const userResult = await createUser(userModel)
+    const user = await createUser(userModel)
 
+    // Create the personal folder for the user
     const folderModel: FolderModel = {
       name: "Personal",
       type: "personal",
-      creatorId: userResult.insertedId,
+      createdBy: user.insertedId,
       createdOn: new Date().toISOString(),
-      modifierId: userResult.insertedId,
+      modifiedBy: user.insertedId,
       modifiedOn: new Date().toISOString()
     }
 
-    const folderResult = await createFolder(folderModel)
+    await createFolder(folderModel)
 
-    const memberModel: MemberModel = {
-      folderId: folderResult.insertedId,
-      userId: userResult.insertedId,
-      creatorId: userResult.insertedId,
-      createdOn: new Date().toISOString(),
-      modifierId: userResult.insertedId,
-      modifiedOn: new Date().toISOString()
+    // Return the response
+    const userResponse: UserResponse = {
+      id: user.insertedId.toHexString(),
+      name: userModel.name,
+      email: userModel.email,
+      createdOn: userModel.createdOn,
+      modifiedOn: userModel.modifiedOn
     }
 
-    await createMember(memberModel)
-
-    return Response.json(null, { status: 201 })
+    return new Response(
+      JSON.stringify({
+        message: "User created successfully",
+        user: userResponse
+      }),
+      {
+        status: 201,
+        headers: {
+          "Content-Type": "application/json",
+          "Location": `/users/${user.insertedId}`
+        }
+      }
+    )
   } catch (error) {
     if (error instanceof ZodError) {
       const errorDetails = error.errors.map(e => e.message).join(", ")
-      return Response.json({ error: errorDetails }, { status: 400 })
+      return new Response(
+        JSON.stringify({
+          error: errorDetails
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
     }
     if (error instanceof Error) {
-      return Response.json({ error: error.message }, { status: 400 })
+      return new Response(
+        JSON.stringify({
+          error: error.message
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
     }
-    return Response.json({ error: "An error occurred" }, { status: 500 })
+    return new Response(
+      JSON.stringify({
+        error: "An unexpected error occurred"
+      }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    )
   }
 }
