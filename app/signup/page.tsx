@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import SignUpForm from "@/components/forms/SignUpForm"
+import SignUpForm from "@/components/SignUpForm"
 import { useNotification } from "@/components/providers/NotificationProvider"
 import { getSession } from "@/lib/auth"
 import { useRouter } from "next/navigation"

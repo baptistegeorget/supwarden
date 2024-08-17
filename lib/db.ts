@@ -2,8 +2,6 @@ import clientPromise from "@/lib/mongodb"
 import { ElementModel, FolderModel, InvitationModel, MemberModel, SessionModel, UserModel } from "@/types"
 import { ObjectId, WithId } from "mongodb"
 
-// Checks
-
 export async function checkEmailIsUsed(email: string) {
   const client = await clientPromise
 
@@ -106,6 +104,20 @@ export async function createSession(session: SessionModel) {
   return result
 }
 
+// Deletions
+
+export async function deleteElement(elementId: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const elementsCollection = db.collection<ElementModel>("elements")
+
+  const result = await elementsCollection.deleteOne({ _id: new ObjectId(elementId) })
+
+  return result
+}
+
 // Updates
 
 export async function updateFolder(folder: WithId<FolderModel>) {
@@ -180,6 +192,18 @@ export async function getMemberById(id: string) {
   const member = await membersCollection.findOne({ _id: new ObjectId(id) })
 
   return member
+}
+
+export async function getElementById(id: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const elementsCollection = db.collection<ElementModel>("elements")
+
+  const element = await elementsCollection.findOne({ _id: new ObjectId(id) })
+
+  return element
 }
 
 export async function getUserByCredentials(email: string, password: string) {

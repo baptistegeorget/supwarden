@@ -1,20 +1,17 @@
 import { ObjectId } from "mongodb"
 
 export type UserModel = {
-  lastName: string,
-  firstName: string,
+  name: string,
   email: string,
   password: string,
   pin?: string,
-  status: "active" | "disabled" | "deleted",
   createdOn: string,
   modifiedOn: string
 }
 
 export type UserResponse = {
   id: string,
-  lastName: string,
-  firstName: string,
+  name: string,
   email: string,
   createdOn: string,
   modifiedOn: string
@@ -23,9 +20,9 @@ export type UserResponse = {
 export type FolderModel = {
   name: string,
   type: "personal" | "shared",
-  creatorId: ObjectId,
+  createdBy: ObjectId,
   createdOn: string,
-  modifierId: ObjectId,
+  modifiedBy: ObjectId,
   modifiedOn: string
 }
 
@@ -101,6 +98,7 @@ export type ElementModel = {
 
 export type ElementResponse = {
   id: string,
+  folder: FolderResponse,
   name: string,
   identifier?: string,
   password?: string,
@@ -117,11 +115,17 @@ export type ElementResponse = {
 
 export type SessionModel = {
   userId: ObjectId,
-  date: string
+  createdOn: string,
+  expiredOn: string
 }
 
 export type SessionResponse = {
   id: string,
-  user: UserResponse,
-  date: string
+  user: {
+    id: string,
+    name: string,
+    email: string
+  },
+  createdOn: string,
+  expiredOn: string
 }

@@ -6,11 +6,6 @@ if (!process.env.JWT_SECRET) {
 
 const jwtSecret = process.env.JWT_SECRET
 
-export function sign(payload: any) {
-  const token = jwt.sign(payload, jwtSecret, { expiresIn: "1h" })
-  return token
-}
-
 export function verify<T>(token: string) {
   try {
     const payload = jwt.verify(token, jwtSecret) as T

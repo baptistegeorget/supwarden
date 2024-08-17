@@ -1,12 +1,20 @@
 import { z } from "zod"
 
 export const signUpSchema = z.object({
-  firstName: z.string().min(1).max(32),
-  lastName: z.string().min(1).max(32),
-  email: z.string().email(),
-  password: z.string().min(8).max(32),
-  passwordConfirmation: z.string().min(8).max(32)
-})
+  name: z.string({ required_error: "The name is required" })
+    .min(1, "The length of the name must be greater than or equal to 1")
+    .max(32, "The length of the name must be less than or equal to 32"),
+  email: z.string({ required_error: "The email is required" })
+    .email("The email must be a valid email address"),
+  password: z.string({ required_error: "The password is required" })
+    .min(8, "The length of the password must be greater than or equal to 8")
+    .max(32, "The length of the password must be less than or equal to 32"),
+  passwordConfirmation: z.string({ required_error: "The password confirmation is required" })
+    .min(8, "The length of the password confirmation must be greater than or equal to 8")
+    .max(32, "The length of the password confirmation must be less than or equal to 32")
+}).refine((data) => {
+  return data.password === data.passwordConfirmation
+}, { message: "The passwords do not match" })
 
 export const signInSchema = z.object({
   email: z.string().email(),
