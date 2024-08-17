@@ -26,6 +26,24 @@ export type FolderModel = {
   modifiedOn: string
 }
 
+export type FolderResponse = {
+  id: string,
+  name: string,
+  type: "personal" | "shared",
+  createdBy: {
+    id: string,
+    name: string,
+    email: string
+  },
+  createdOn: string,
+  modifiedBy: {
+    id: string,
+    name: string,
+    email: string
+  },
+  modifiedOn: string
+}
+
 export type SessionModel = {
   user: ObjectId,
   createdOn: string
@@ -41,40 +59,35 @@ export type SessionResponse = {
   createdOn: string
 }
 
-
-
-
-
-
-
-
-export type FolderResponse = {
-  id: string,
-  name: string,
-  type: "personal" | "shared",
-  creator: UserResponse,
-  createdOn: string,
-  modifier: UserResponse,
-  modifiedOn: string
-}
-
 export type MemberModel = {
-  folderId: ObjectId,
-  userId: ObjectId,
-  creatorId: ObjectId,
-  createdOn: string,
-  modifierId: ObjectId,
-  modifiedOn: string
+  folder: ObjectId,
+  user: ObjectId
 }
 
+// à supprimer peut etre car on retourne pas une relation N-N
 export type MemberResponse = {
   id: string,
-  user: UserResponse,
-  creator: UserResponse,
-  createdOn: string,
-  modifier: UserResponse,
-  modifiedOn: string
+  folder: {
+    id: string,
+    name: string
+  }
+  user: {
+    id: string,
+    name: string,
+    email: string
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
 
 export type InvitationModel = {
   folderId: ObjectId,

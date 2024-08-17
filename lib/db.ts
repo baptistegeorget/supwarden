@@ -62,6 +62,33 @@ export async function createSession(session: SessionModel) {
   return result
 }
 
+export async function getUserById(id: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const usersCollection = db.collection<UserModel>("users")
+
+  const user = await usersCollection.findOne({ _id: new ObjectId(id) }, { projection: { password: 0, pin: 0 } })
+
+  return user
+}
+
+export async function createMember(member: MemberModel) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const membersCollection = db.collection<MemberModel>("members")
+
+  const result = await membersCollection.insertOne(member)
+
+  return result
+}
+
+
+
+
 
 
 
@@ -94,17 +121,7 @@ export async function checkPendingInvitationExist(userId: string, folderId: stri
 
 
 
-export async function createMember(member: MemberModel) {
-  const client = await clientPromise
 
-  const db = client.db()
-
-  const membersCollection = db.collection<MemberModel>("members")
-
-  const result = await membersCollection.insertOne(member)
-
-  return result
-}
 
 export async function createInvitation(invitation: InvitationModel) {
   const client = await clientPromise
@@ -174,17 +191,7 @@ export async function updateInvitation(invitation: WithId<InvitationModel>) {
 
 // Getters
 
-export async function getUserById(id: string) {
-  const client = await clientPromise
 
-  const db = client.db()
-
-  const usersCollection = db.collection<UserModel>("users")
-
-  const user = await usersCollection.findOne({ _id: new ObjectId(id) }, { projection: { password: 0, pin: 0 } })
-
-  return user
-}
 
 export async function getFolderById(id: string) {
   const client = await clientPromise
@@ -243,14 +250,14 @@ export async function getFoldersByUserId(userId: string) {
 
   const membersCollection = db.collection<MemberModel>("members")
 
-  const members = await membersCollection.find({ userId: new ObjectId(userId) }).toArray()
+  const members = await membersCollection.find({ user: new ObjectId(userId) }).toArray()
 
   const foldersCollection = db.collection<FolderModel>("folders")
 
   const folders: WithId<FolderModel>[] = []
 
   for (const member of members) {
-    const folder = await foldersCollection.findOne({ _id: member.folderId })
+    const folder = await foldersCollection.findOne({ _id: member.folder })
 
     if (folder) {
       folders.push(folder)
@@ -303,7 +310,7 @@ export async function getMembersByFolderId(folderId: string) {
 
   const membersCollection = db.collection<MemberModel>("members")
 
-  const members = await membersCollection.find({ folderId: new ObjectId(folderId) }).toArray()
+  const members = await membersCollection.find({ folder: new ObjectId(folderId) }).toArray()
 
   return members
 }
@@ -315,7 +322,7 @@ export async function getMemberByInformations(userId: string, folderId: string) 
 
   const membersCollection = db.collection<MemberModel>("members")
 
-  const member = await membersCollection.findOne({ userId: new ObjectId(userId), folderId: new ObjectId(folderId) })
+  const member = await membersCollection.findOne({ user: new ObjectId(userId), folder: new ObjectId(folderId) })
 
   return member
 }

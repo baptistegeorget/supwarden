@@ -25,7 +25,9 @@ export const signInSchema = z.object({
 })
 
 export const folderSchema = z.object({
-  name: z.string().min(1).max(32)
+  name: z.string({ required_error: "The name is required" })
+    .min(1, "The length of the name must be greater than or equal to 1")
+    .max(32, "The length of the name must be less than or equal to 32"),
 })
 
 export const invitationSchema = z.object({
