@@ -1,5 +1,5 @@
 import { signUpSchema } from "@/lib/zod"
-import { checkEmailIsUsed, createFolder, createMember, createUser } from "@/lib/db"
+import { checkIfEmailIsUsed, createFolder, createMember, createUser } from "@/lib/db"
 import { ZodError } from "zod"
 import { FolderModel, MemberModel, UserModel, UserResponse } from "@/types"
 import { createHash } from "crypto"
@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     const data = await signUpSchema.parseAsync(body)
 
     // Check if the email is already used
-    const emailIsUsed = await checkEmailIsUsed(data.email)
+    const emailIsUsed = await checkIfEmailIsUsed(data.email)
 
     if (emailIsUsed) {
       return new Response(
