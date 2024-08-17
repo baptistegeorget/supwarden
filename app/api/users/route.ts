@@ -68,7 +68,7 @@ export async function POST(request: Request) {
         status: 201,
         headers: {
           "Content-Type": "application/json",
-          "Location": `/users/${user.insertedId}`
+          "Location": `/users/${user.insertedId.toHexString()}`
         }
       }
     )
