@@ -1,8 +1,8 @@
 import { signUpSchema } from "@/lib/zod"
 import { checkEmailIsUsed, createFolder, createUser } from "@/lib/db"
-import { hashPassword } from "@/lib/password"
 import { ZodError } from "zod"
 import { FolderModel, UserModel, UserResponse } from "@/types"
+import { createHash } from "crypto"
 
 export async function POST(request: Request) {
   try {
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     const userModel: UserModel = {
       name: data.name,
       email: data.email,
-      password: hashPassword(data.password),
+      password: createHash("sha256").update(data.password).digest("hex"),
       createdOn: new Date().toISOString(),
       modifiedOn: new Date().toISOString()
     }
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
           error: error.message
         }),
         {
-          status: 400,
+          status: 500,
           headers: {
             "Content-Type": "application/json"
           }
@@ -102,7 +102,7 @@ export async function POST(request: Request) {
     }
     return new Response(
       JSON.stringify({
-        error: "An unexpected error occurred"
+        error: "An unknown error occurred"
       }),
       {
         status: 500,
