@@ -8,7 +8,7 @@ export default function InvitationsList({
   onChange
 }: {
   invitations: InvitationResponse[],
-  onChange: () => void
+  onChange?: () => void
 }) {
   const notify = useNotification()
 
@@ -21,7 +21,7 @@ export default function InvitationsList({
     })
     if (response.ok) {
       notify(`Invitation ${status}`, "success")
-      onChange()
+      if (onChange) onChange()
     } else {
       notify(`Failed to update ${status}`, "error")
     }
