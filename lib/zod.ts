@@ -31,7 +31,8 @@ export const folderSchema = z.object({
 })
 
 export const invitationSchema = z.object({
-  email: z.string().email()
+  email: z.string({ required_error: "The email is required" })
+    .email("The email must be a valid email address"),
 })
 
 const fileSchema = z.object({

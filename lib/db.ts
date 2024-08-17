@@ -2,7 +2,7 @@ import clientPromise from "@/lib/mongodb"
 import { ElementModel, FolderModel, InvitationModel, MemberModel, SessionModel, UserModel } from "@/types"
 import { ObjectId, WithId } from "mongodb"
 
-export async function checkEmailIsUsed(email: string) {
+export async function checkIfEmailIsUsed(email: string) {
   const client = await clientPromise
 
   const db = client.db()
@@ -102,42 +102,53 @@ export async function getFoldersByUserId(id: string) {
   return folders
 }
 
+export async function getFolderById(id: string) {
+  const client = await clientPromise
 
+  const db = client.db()
 
+  const foldersCollection = db.collection<FolderModel>("folders")
 
+  const folder = await foldersCollection.findOne({ _id: new ObjectId(id) })
 
+  return folder
+}
 
+export async function checkIfMemberExist(userId: string, folderId: string) {
+  const client = await clientPromise
 
+  const db = client.db()
 
+  const membersCollection = db.collection<MemberModel>("members")
 
+  const member = await membersCollection.findOne({ user: new ObjectId(userId), folder: new ObjectId(folderId) })
 
+  return !!member
+}
 
+export async function getUserByEmail(email: string) {
+  const client = await clientPromise
 
+  const db = client.db()
 
+  const usersCollection = db.collection<UserModel>("users")
 
-export async function checkPendingInvitationExist(userId: string, folderId: string) {
+  const user = await usersCollection.findOne({ email }, { projection: { password: 0, pin: 0 } })
+
+  return user
+}
+
+export async function checkIfPendingInvitationExist(userId: string, folderId: string) {
   const client = await clientPromise
 
   const db = client.db()
 
   const invitationsCollection = db.collection<InvitationModel>("invitations")
 
-  const invitation = await invitationsCollection.findOne({
-    userId: new ObjectId(userId),
-    folderId: new ObjectId(folderId),
-    status: "pending"
-  })
+  const invitation = await invitationsCollection.findOne({ user: new ObjectId(userId), folder: new ObjectId(folderId), status: "pending" })
 
   return !!invitation
 }
-
-// Creations
-
-
-
-
-
-
 
 export async function createInvitation(invitation: InvitationModel) {
   const client = await clientPromise
@@ -150,6 +161,35 @@ export async function createInvitation(invitation: InvitationModel) {
 
   return result
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export async function createElement(element: ElementModel) {
   const client = await clientPromise
@@ -209,17 +249,7 @@ export async function updateInvitation(invitation: WithId<InvitationModel>) {
 
 
 
-export async function getFolderById(id: string) {
-  const client = await clientPromise
 
-  const db = client.db()
-
-  const foldersCollection = db.collection<FolderModel>("folders")
-
-  const folder = await foldersCollection.findOne({ _id: new ObjectId(id) })
-
-  return folder
-}
 
 export async function getInvitationById(id: string) {
   const client = await clientPromise
@@ -261,17 +291,7 @@ export async function getElementById(id: string) {
 
 
 
-export async function getUserByEmail(email: string) {
-  const client = await clientPromise
 
-  const db = client.db()
-
-  const usersCollection = db.collection<UserModel>("users")
-
-  const user = await usersCollection.findOne({ email }, { projection: { password: 0, pin: 0 } })
-
-  return user
-}
 
 export async function getPendingInvitationsByUserId(userId: string) {
   const client = await clientPromise
@@ -280,7 +300,7 @@ export async function getPendingInvitationsByUserId(userId: string) {
 
   const invitationsCollection = db.collection<InvitationModel>("invitations")
 
-  const invitations = await invitationsCollection.find({ userId: new ObjectId(userId), status: "pending" }).toArray()
+  const invitations = await invitationsCollection.find({ user: new ObjectId(userId), status: "pending" }).toArray()
 
   return invitations
 }
@@ -309,14 +329,3 @@ export async function getMembersByFolderId(folderId: string) {
   return members
 }
 
-export async function getMemberByInformations(userId: string, folderId: string) {
-  const client = await clientPromise
-
-  const db = client.db()
-
-  const membersCollection = db.collection<MemberModel>("members")
-
-  const member = await membersCollection.findOne({ user: new ObjectId(userId), folder: new ObjectId(folderId) })
-
-  return member
-}

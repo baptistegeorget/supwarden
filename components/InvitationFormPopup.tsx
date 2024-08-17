@@ -1,13 +1,16 @@
 "use client"
 
 import SecondaryButton from "@/components/buttons/SecondaryButton"
-import InvitationForm from "@/components/forms/InvitationForm"
-import { useNotification } from "../providers/NotificationProvider"
+import InvitationForm from "@/components/InvitationForm"
+import { useNotification } from "@/components/providers/NotificationProvider"
+import { SessionResponse } from "@/types"
 
 export default function InvitationFormPopup({
+  session,
   folderId,
   onClose
 }: {
+  session: SessionResponse,
   folderId: string,
   onClose?: () => void
 }) {
@@ -18,12 +21,10 @@ export default function InvitationFormPopup({
       <div className="bg-black py-8 px-16 rounded-md shadow-lg border border-neutral-700 flex flex-col items-center gap-2">
         <h2 className="text-xl font-bold">Send invitation</h2>
         <InvitationForm
+          session={session}
           folderId={folderId}
-          onSuccess={() => {
-            notify("Invitation sent", "success")
-            if (onClose) onClose()
-          }}
-          onFailure={(error) => notify(error, "error")}
+          onSuccess={(successMessage) => notify(successMessage, "success")}
+          onFailure={(errorMessage) => notify(errorMessage, "error")}
         />
         <SecondaryButton onClick={onClose}>Cancel</SecondaryButton>
       </div>

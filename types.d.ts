@@ -64,37 +64,56 @@ export type MemberModel = {
   user: ObjectId
 }
 
-
-
-
-
-
-
-
-
-
-
-
 export type InvitationModel = {
-  folderId: ObjectId,
-  userId: ObjectId,
+  folder: ObjectId,
+  user: ObjectId,
   status: "pending" | "accepted" | "rejected",
-  creatorId: ObjectId,
+  createdBy: ObjectId,
   createdOn: string,
-  modifierId: ObjectId,
+  modifiedBy: ObjectId,
   modifiedOn: string
 }
 
 export type InvitationResponse = {
   id: string,
-  folder: FolderResponse,
-  user: UserResponse,
+  folder: {
+    id: string,
+    name: string
+  },
+  user: {
+    id: string,
+    name: string,
+    email: string
+  },
   status: "pending" | "accepted" | "rejected",
-  creator: UserResponse,
+  createdBy: {
+    id: string,
+    name: string,
+    email: string
+  },
   createdOn: string,
-  modifier: UserResponse,
+  modifiedBy: {
+    id: string,
+    name: string,
+    email: string
+  },
   modifiedOn: string
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export type CustomField = {
   type: "visible" | "hidden" | "attachment",
