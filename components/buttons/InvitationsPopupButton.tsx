@@ -4,10 +4,8 @@ import InvitationsPopup from "@/components/popups/InvitationsPopup"
 import { InvitationResponse } from "@/types"
 import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
-import { useNotification } from "@/components/providers/NotificationProvider"
 
 export default function InvitationsPopupButton() {
-  const notify = useNotification()
   const [isNotificationPopupVisible, setIsNotificationPopupVisible] = useState(false)
   const [invitations, setInvitations] = useState<InvitationResponse[]>([])
 
@@ -30,24 +28,10 @@ export default function InvitationsPopupButton() {
     }
   }
 
-  async function patchInvitation(invitationId: string, status: "accepted" | "rejected") {
-    const response = await fetch(`/api/invitations?status=${status}&invitationId=${invitationId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    if (response.ok) {
-      getInvitations()
-      notify(`Invitation ${status}`, "success")
-    } else {
-      notify(`Failed to update ${status}`, "error")
-    }
-  }
-
   return (
     <>
       <button
+        type="button"
         onClick={() => {
           getInvitations()
           setIsNotificationPopupVisible(true)
@@ -60,12 +44,10 @@ export default function InvitationsPopupButton() {
       </button>
       {isNotificationPopupVisible &&
         createPortal(
-          <InvitationsPopup
-            invitations={invitations}
-            onAccept={async (invitationId: string) => patchInvitation(invitationId, "accepted")}
-            onReject={async (invitationId: string) => patchInvitation(invitationId, "rejected")}
-            onClose={() => setIsNotificationPopupVisible(false)}
-          />,
+          <InvitationsPopup onClose={() => {
+            setIsNotificationPopupVisible(false)
+            getInvitations()
+          }} />,
           document.body
         )
       }
