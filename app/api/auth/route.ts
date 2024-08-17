@@ -55,7 +55,17 @@ export async function POST(request: Request) {
 
     const token = jwt.sign(sessionResponse, JWT_SECRET, { expiresIn: "1h" })
 
-    return Response.json({ token }, { status: 200 })
+    return new Response(
+      JSON.stringify({
+        token
+      }),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    )
   } catch (error) {
     if (error instanceof ZodError) {
       const errorDetails = error.errors.map(e => e.message).join(", ")
