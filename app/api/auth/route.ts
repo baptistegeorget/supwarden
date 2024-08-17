@@ -4,6 +4,7 @@ import { ZodError } from "zod"
 import { SessionModel, SessionResponse } from "@/types"
 import jwt from "jsonwebtoken"
 import { createHash } from "crypto"
+import { cookies } from "next/headers"
 
 if (!process.env.JWT_SECRET) {
   throw new Error("Invalid/Missing environment variable: JWT_SECRET")
@@ -42,7 +43,7 @@ export async function POST(request: Request) {
 
     const session = await createSession(sessionModel)
 
-    // Return the token
+    // Save the session in a cookie
     const sessionResponse: SessionResponse = {
       id: session.insertedId.toHexString(),
       user: {
@@ -55,9 +56,12 @@ export async function POST(request: Request) {
 
     const token = jwt.sign(sessionResponse, JWT_SECRET, { expiresIn: "1h" })
 
+    cookies().set("auth-token", token)
+
+    // Return the response
     return new Response(
       JSON.stringify({
-        token
+        message: "Successfully signed in"
       }),
       {
         status: 200,
