@@ -64,20 +64,6 @@ export type MemberModel = {
   user: ObjectId
 }
 
-// à supprimer peut etre car on retourne pas une relation N-N
-export type MemberResponse = {
-  id: string,
-  folder: {
-    id: string,
-    name: string
-  }
-  user: {
-    id: string,
-    name: string,
-    email: string
-  }
-}
-
 
 
 

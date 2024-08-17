@@ -1,7 +1,8 @@
 import { getSession } from "@/lib/auth"
-import { createFolder, createMember, getUserById } from "@/lib/db"
+import { createFolder, createMember, getFoldersByUserId, getUserById } from "@/lib/db"
 import { folderSchema } from "@/lib/zod"
-import { FolderModel, FolderResponse, MemberModel } from "@/types"
+import { FolderModel, FolderResponse, MemberModel, UserModel } from "@/types"
+import { WithId } from "mongodb"
 import { ZodError } from "zod"
 
 export async function POST(request: Request, { params }: { params: { userId: string } }) {
@@ -126,6 +127,123 @@ export async function POST(request: Request, { params }: { params: { userId: str
         }
       )
     }
+    if (error instanceof Error) {
+      return new Response(
+        JSON.stringify({
+          error: error.message
+        }),
+        {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+    }
+    return new Response(
+      JSON.stringify({
+        error: "An unknown error occurred"
+      }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    )
+  }
+}
+
+export async function GET(_request: Request, { params }: { params: { userId: string } }) {
+  try {
+    // Get the session
+    const session = await getSession()
+
+    if (!session) {
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized"
+        }),
+        {
+          status: 401,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+    }
+
+    // Get the user
+    const user = await getUserById(params.userId)
+
+    if (!user) {
+      return new Response(
+        JSON.stringify({
+          error: "User not found"
+        }),
+        {
+          status: 404,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+    }
+
+    // Check if the user is the same as the session user
+    if (session.user.id !== user._id.toHexString()) {
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized"
+        }),
+        {
+          status: 401,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+    }
+
+    // Get the folders
+    const folders = await getFoldersByUserId(user._id.toHexString())
+
+    // Return the response
+    const foldersResponse: FolderResponse[] = await Promise.all(folders.map(async (folder) => {
+      const createdBy = await getUserById(folder.createdBy.toHexString()) as WithId<UserModel>
+      const modifiedBy = await getUserById(folder.modifiedBy.toHexString()) as WithId<UserModel>
+
+      return {
+        id: folder._id.toHexString(),
+        name: folder.name,
+        type: folder.type,
+        createdBy: {
+          id: folder.createdBy.toHexString(),
+          name: createdBy.name,
+          email: createdBy.email
+        },
+        createdOn: folder.createdOn,
+        modifiedBy: {
+          id: folder.modifiedBy.toHexString(),
+          name: modifiedBy.name,
+          email: modifiedBy.email
+        },
+        modifiedOn: folder.modifiedOn
+      }
+    }))
+
+    return new Response(
+      JSON.stringify({
+        folders: foldersResponse
+      }),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    )
+  } catch (error) {
     if (error instanceof Error) {
       return new Response(
         JSON.stringify({

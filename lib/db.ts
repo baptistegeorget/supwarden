@@ -86,6 +86,22 @@ export async function createMember(member: MemberModel) {
   return result
 }
 
+export async function getFoldersByUserId(id: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const membersCollection = db.collection<MemberModel>("members")
+
+  const members = await membersCollection.find({ user: new ObjectId(id) }).toArray()
+
+  const foldersCollection = db.collection<FolderModel>("folders")
+
+  const folders = await foldersCollection.find({ _id: { $in: members.map(member => member.folder) } }).toArray()
+
+  return folders
+}
+
 
 
 
@@ -243,29 +259,7 @@ export async function getElementById(id: string) {
 
 
 
-export async function getFoldersByUserId(userId: string) {
-  const client = await clientPromise
 
-  const db = client.db()
-
-  const membersCollection = db.collection<MemberModel>("members")
-
-  const members = await membersCollection.find({ user: new ObjectId(userId) }).toArray()
-
-  const foldersCollection = db.collection<FolderModel>("folders")
-
-  const folders: WithId<FolderModel>[] = []
-
-  for (const member of members) {
-    const folder = await foldersCollection.findOne({ _id: member.folder })
-
-    if (folder) {
-      folders.push(folder)
-    }
-  }
-
-  return folders
-}
 
 export async function getUserByEmail(email: string) {
   const client = await clientPromise
