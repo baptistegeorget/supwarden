@@ -1,53 +1,99 @@
 import { createSession, getUserByCredentials } from "@/lib/db"
-import { hashPassword } from "@/lib/password"
 import { signInSchema } from "@/lib/zod"
 import { ZodError } from "zod"
 import { SessionModel, SessionResponse } from "@/types"
-import { sign } from "@/lib/jwt"
+import jwt from "jsonwebtoken"
+import { createHash } from "crypto"
+
+if (!process.env.JWT_SECRET) {
+  throw new Error("Invalid/Missing environment variable: JWT_SECRET")
+}
+
+const JWT_SECRET = process.env.JWT_SECRET
 
 export async function POST(request: Request) {
   try {
+    // Get and validate the body
     const body = await request.json()
+    const data = await signInSchema.parseAsync(body)
 
-    const { email, password } = await signInSchema.parseAsync(body)
-
-    const user = await getUserByCredentials(email, hashPassword(password))
+    // Get the user
+    const user = await getUserByCredentials(data.email, createHash("sha256").update(data.password).digest("hex"))
 
     if (!user) {
-      return Response.json({ error: "Invalid credentials" }, { status: 400 })
+      return new Response(
+        JSON.stringify({
+          error: "The email or password is incorrect"
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
     }
 
+    // Create the session
     const sessionModel: SessionModel = {
-      userId: user._id,
-      date: new Date().toISOString()
+      user: user._id,
+      createdOn: new Date().toISOString()
     }
 
-    const sessionResult = await createSession(sessionModel)
+    const session = await createSession(sessionModel)
 
+    // Return the token
     const sessionResponse: SessionResponse = {
-      id: sessionResult.insertedId.toString(),
+      id: session.insertedId.toHexString(),
       user: {
-        id: sessionModel.userId.toString(),
-        lastName: user.lastName,
-        firstName: user.firstName,
-        email: user.email,
-        createdOn: user.createdOn,
-        modifiedOn: user.modifiedOn
+        id: user._id.toHexString(),
+        name: user.name,
+        email: user.email
       },
-      date: sessionModel.date
+      createdOn: sessionModel.createdOn
     }
 
-    const token = sign(sessionResponse)
+    const token = jwt.sign(sessionResponse, JWT_SECRET, { expiresIn: "1h" })
 
     return Response.json({ token }, { status: 200 })
   } catch (error) {
     if (error instanceof ZodError) {
       const errorDetails = error.errors.map(e => e.message).join(", ")
-      return Response.json({ error: errorDetails }, { status: 400 })
+      return new Response(
+        JSON.stringify({
+          error: errorDetails
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
     }
     if (error instanceof Error) {
-      return Response.json({ error: error.message }, { status: 400 })
+      return new Response(
+        JSON.stringify({
+          error: error.message
+        }),
+        {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
     }
-    return Response.json({ error: "An error occurred" }, { status: 500 })
+    return new Response(
+      JSON.stringify({
+        error: "An unknown error occurred"
+      }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    )
   }
 }

@@ -26,6 +26,28 @@ export type FolderModel = {
   modifiedOn: string
 }
 
+export type SessionModel = {
+  user: ObjectId,
+  createdOn: string
+}
+
+export type SessionResponse = {
+  id: string,
+  user: {
+    id: string,
+    name: string,
+    email: string
+  },
+  createdOn: string
+}
+
+
+
+
+
+
+
+
 export type FolderResponse = {
   id: string,
   name: string,
@@ -113,19 +135,3 @@ export type ElementResponse = {
   modifiedOn: string
 }
 
-export type SessionModel = {
-  userId: ObjectId,
-  createdOn: string,
-  expiredOn: string
-}
-
-export type SessionResponse = {
-  id: string,
-  user: {
-    id: string,
-    name: string,
-    email: string
-  },
-  createdOn: string,
-  expiredOn: string
-}

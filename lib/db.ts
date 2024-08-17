@@ -14,24 +14,6 @@ export async function checkEmailIsUsed(email: string) {
   return !!user
 }
 
-export async function checkPendingInvitationExist(userId: string, folderId: string) {
-  const client = await clientPromise
-
-  const db = client.db()
-
-  const invitationsCollection = db.collection<InvitationModel>("invitations")
-
-  const invitation = await invitationsCollection.findOne({
-    userId: new ObjectId(userId),
-    folderId: new ObjectId(folderId),
-    status: "pending"
-  })
-
-  return !!invitation
-}
-
-// Creations
-
 export async function createUser(user: UserModel) {
   const client = await clientPromise
 
@@ -55,6 +37,62 @@ export async function createFolder(folder: FolderModel) {
 
   return result
 }
+
+export async function getUserByCredentials(email: string, password: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const usersCollection = db.collection<UserModel>("users")
+
+  const user = await usersCollection.findOne({ email, password }, { projection: { password: 0, pin: 0 } })
+
+  return user
+}
+
+export async function createSession(session: SessionModel) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const sessionsCollection = db.collection<SessionModel>("sessions")
+
+  const result = await sessionsCollection.insertOne(session)
+
+  return result
+}
+
+
+
+
+
+
+
+
+
+
+
+export async function checkPendingInvitationExist(userId: string, folderId: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const invitationsCollection = db.collection<InvitationModel>("invitations")
+
+  const invitation = await invitationsCollection.findOne({
+    userId: new ObjectId(userId),
+    folderId: new ObjectId(folderId),
+    status: "pending"
+  })
+
+  return !!invitation
+}
+
+// Creations
+
+
+
+
 
 export async function createMember(member: MemberModel) {
   const client = await clientPromise
@@ -92,17 +130,7 @@ export async function createElement(element: ElementModel) {
   return result
 }
 
-export async function createSession(session: SessionModel) {
-  const client = await clientPromise
 
-  const db = client.db()
-
-  const sessionsCollection = db.collection<SessionModel>("sessions")
-
-  const result = await sessionsCollection.insertOne(session)
-
-  return result
-}
 
 // Deletions
 
@@ -206,17 +234,7 @@ export async function getElementById(id: string) {
   return element
 }
 
-export async function getUserByCredentials(email: string, password: string) {
-  const client = await clientPromise
 
-  const db = client.db()
-
-  const usersCollection = db.collection<UserModel>("users")
-
-  const user = await usersCollection.findOne({ email, password, status: "active" }, { projection: { password: 0, pin: 0 } })
-
-  return user
-}
 
 export async function getFoldersByUserId(userId: string) {
   const client = await clientPromise
