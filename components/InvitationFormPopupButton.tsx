@@ -20,11 +20,7 @@ export default function InvitationFormPopupButton({
       <PrimaryButton type="button" onClick={() => setIsInvitationFormPopupVisible(true)}>Share</PrimaryButton>
       {isInvitationFormPopupVisible &&
         createPortal(
-          <InvitationFormPopup
-            session={session}
-            folderId={folderId}
-            onClose={() => setIsInvitationFormPopupVisible(false)}
-          />,
+          <InvitationFormPopup session={session} folderId={folderId} onClose={() => setIsInvitationFormPopupVisible(false)} />,
           document.body
         )
       }
