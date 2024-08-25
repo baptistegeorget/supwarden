@@ -38,22 +38,20 @@ export default function InvitationForm({
       if (onSuccess) onSuccess(message)
     } else {
       const { error }: { error: string } = await response.json()
-      
+
       if (onFailure) onFailure(error)
     }
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-2 w-full items-center">
-      <div className="flex gap-2">
-        <InputField
-          type="email"
-          name="email"
-          placeholder="Enter user email"
-          required
-        />
-        <PrimaryButton type="submit">Send</PrimaryButton>
-      </div>
+    <form onSubmit={submit} className="flex gap-2 w-full">
+      <InputField
+        type="email"
+        name="email"
+        placeholder="Enter user email"
+        required
+      />
+      <PrimaryButton type="submit">Send</PrimaryButton>
     </form>
   )
 }
