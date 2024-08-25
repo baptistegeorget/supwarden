@@ -1,7 +1,7 @@
 import { getSession } from "@/lib/auth"
 import { checkIfMemberExist, checkIfPendingInvitationExist, createInvitation, getFolderById, getUserByEmail, getUserById } from "@/lib/db"
 import { invitationSchema } from "@/lib/zod"
-import { InvitationModel, InvitationResponse } from "@/types"
+import { InvitationModel } from "@/types"
 import { ZodError } from "zod"
 
 export async function POST(request: Request, { params }: { params: { userId: string, folderId: string } }) {
