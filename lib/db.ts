@@ -198,6 +198,18 @@ export async function updateInvitation(invitation: WithId<InvitationModel>) {
   return result
 }
 
+export async function getMembersByFolderId(id: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const membersCollection = db.collection<MemberModel>("members")
+
+  const members = await membersCollection.find({ folder: new ObjectId(id) }).toArray()
+
+  return members
+}
+
 
 
 
@@ -322,15 +334,5 @@ export async function getElementsByFolderId(folderId: string) {
   return elements
 }
 
-export async function getMembersByFolderId(folderId: string) {
-  const client = await clientPromise
 
-  const db = client.db()
-
-  const membersCollection = db.collection<MemberModel>("members")
-
-  const members = await membersCollection.find({ folder: new ObjectId(folderId) }).toArray()
-
-  return members
-}
 
