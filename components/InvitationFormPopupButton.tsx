@@ -26,7 +26,8 @@ export default function InvitationFormPopupButton({
             onClose={() => setIsInvitationFormPopupVisible(false)}
           />,
           document.body
-        )}
+        )
+      }
     </>
   )
 }
