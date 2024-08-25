@@ -162,6 +162,41 @@ export async function createInvitation(invitation: InvitationModel) {
   return result
 }
 
+export async function getPendingInvitationsByUserId(id: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const invitationsCollection = db.collection<InvitationModel>("invitations")
+
+  const invitations = await invitationsCollection.find({ user: new ObjectId(id), status: "pending" }).toArray()
+
+  return invitations
+}
+
+export async function getInvitationById(id: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const invitationsCollection = db.collection<InvitationModel>("invitations")
+
+  const invitation = await invitationsCollection.findOne({ _id: new ObjectId(id) })
+
+  return invitation
+}
+
+export async function updateInvitation(invitation: WithId<InvitationModel>) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const invitationsCollection = db.collection<InvitationModel>("invitations")
+
+  const result = await invitationsCollection.updateOne({ _id: invitation._id }, { $set: invitation })
+
+  return result
+}
 
 
 
@@ -233,17 +268,7 @@ export async function updateFolder(folder: WithId<FolderModel>) {
   return result
 }
 
-export async function updateInvitation(invitation: WithId<InvitationModel>) {
-  const client = await clientPromise
 
-  const db = client.db()
-
-  const invitationsCollection = db.collection<InvitationModel>("invitations")
-
-  const result = await invitationsCollection.updateOne({ _id: invitation._id }, { $set: invitation })
-
-  return result
-}
 
 // Getters
 
@@ -251,17 +276,7 @@ export async function updateInvitation(invitation: WithId<InvitationModel>) {
 
 
 
-export async function getInvitationById(id: string) {
-  const client = await clientPromise
 
-  const db = client.db()
-
-  const invitationsCollection = db.collection<InvitationModel>("invitations")
-
-  const invitation = await invitationsCollection.findOne({ _id: new ObjectId(id) })
-
-  return invitation
-}
 
 export async function getMemberById(id: string) {
   const client = await clientPromise
@@ -293,17 +308,7 @@ export async function getElementById(id: string) {
 
 
 
-export async function getPendingInvitationsByUserId(userId: string) {
-  const client = await clientPromise
 
-  const db = client.db()
-
-  const invitationsCollection = db.collection<InvitationModel>("invitations")
-
-  const invitations = await invitationsCollection.find({ user: new ObjectId(userId), status: "pending" }).toArray()
-
-  return invitations
-}
 
 export async function getElementsByFolderId(folderId: string) {
   const client = await clientPromise

@@ -35,6 +35,10 @@ export const invitationSchema = z.object({
     .email("The email must be a valid email address"),
 })
 
+export const invitationResponseSchema = z.object({
+  response: z.boolean({ required_error: "The response is required" })
+})
+
 const fileSchema = z.object({
   name: z.string().min(1).max(256),
   data: z.string().regex(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).base64/)
