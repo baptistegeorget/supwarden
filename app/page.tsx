@@ -1,7 +1,7 @@
 "use client"
 
 import FolderForm from "@/components/FolderForm"
-import Header from "@/components/truc"
+import Header from "@/components/Header"
 import FoldersList from "@/components/FoldersList"
 import { SessionResponse, FolderResponse, ElementResponse, UserResponse } from "@/types"
 import { useEffect, useState } from "react"
