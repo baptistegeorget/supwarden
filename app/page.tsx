@@ -6,12 +6,12 @@ import FoldersList from "@/components/FoldersList"
 import { SessionResponse, FolderResponse, ElementResponse, UserResponse } from "@/types"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import MembersList from "@/components/lists/MembersList"
 import { useNotification } from "@/components/providers/NotificationProvider"
 import ElementForm from "@/components/forms/ElementForm"
 import InvitationFormPopupButton from "@/components/InvitationFormPopupButton"
 import ElementsList from "@/components/lists/ElementsList"
 import { getSession } from "@/lib/auth"
+import MembersPanel from "@/components/MembersPanel"
 
 export default function HomePage() {
   const notify = useNotification()
@@ -21,7 +21,6 @@ export default function HomePage() {
   const [selectedFolder, setSelectedFolder] = useState<FolderResponse | undefined>(undefined)
   const [elements, setElements] = useState<ElementResponse[]>([])
   const [selectedElement, setSelectedElement] = useState<ElementResponse | null>(null)
-  const [members, setMembers] = useState<UserResponse[]>([])
   // Messages here
   const [rightPanelView, setRightPanelView] = useState<"member" | "form" | "message">("member")
   const [elementFormMode, setElementFormMode] = useState<"new" | "edit" | "view">("new")
@@ -54,7 +53,6 @@ export default function HomePage() {
     setElementFormMode("new")
     setRightPanelView("member")
     if (selectedFolder) {
-      getMembers(selectedFolder.id)
       getElements(selectedFolder.id)
     }
   }, [selectedFolder])
@@ -66,28 +64,12 @@ export default function HomePage() {
         "Content-Type": "application/json"
       }
     })
-
     if (response.ok) {
       const { folders }: { folders: FolderResponse[] } = await response.json()
 
       return setFolders(folders)
     } else {
       return setFolders([])
-    }
-  }
-
-  async function getMembers(folderId: string) {
-    const response = await fetch(`/api/members?folderId=${folderId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    if (response.ok) {
-      const { members } = await response.json()
-      return setMembers(members)
-    } else {
-      return setMembers([])
     }
   }
 
@@ -190,9 +172,9 @@ export default function HomePage() {
             />
           </main>
         )}
+        {selectedFolder && rightPanelView === "member" && <MembersPanel session={session} folder={selectedFolder} />}
         {selectedFolder && (
           <aside className="flex flex-col py-4 px-8 gap-2 border-l border-neutral-700 w-96 overflow-auto scrollbar-thin">
-            {rightPanelView === "member" && <MembersList members={members} />}
             {rightPanelView === "message" && (
               <div className="flex-1 flex items-center justify-center">
                 <p className="text-neutral-500">No message</p>
