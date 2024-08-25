@@ -11,7 +11,7 @@ import ElementForm from "@/components/forms/ElementForm"
 import InvitationFormPopupButton from "@/components/InvitationFormPopupButton"
 import ElementsList from "@/components/lists/ElementsList"
 import { getSession } from "@/lib/auth"
-import MembersPanel from "@/components/MembersPanel"
+import MemberPanel from "@/components/MemberPanel"
 
 export default function HomePage() {
   const notify = useNotification()
@@ -172,7 +172,7 @@ export default function HomePage() {
             />
           </main>
         )}
-        {selectedFolder && rightPanelView === "member" && <MembersPanel session={session} folder={selectedFolder} />}
+        {selectedFolder && rightPanelView === "member" && <MemberPanel session={session} folder={selectedFolder} />}
         {selectedFolder && (
           <aside className="flex flex-col py-4 px-8 gap-2 border-l border-neutral-700 w-96 overflow-auto scrollbar-thin">
             {rightPanelView === "message" && (

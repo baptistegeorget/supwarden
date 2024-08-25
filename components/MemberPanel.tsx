@@ -3,7 +3,7 @@
 import { FolderResponse, SessionResponse, UserResponse } from "@/types"
 import { useEffect, useState } from "react"
 
-export default function MembersPanel({
+export default function MemberPanel({
   session,
   folder
 }: {
