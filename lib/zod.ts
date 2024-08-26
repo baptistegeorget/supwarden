@@ -39,9 +39,6 @@ export const invitationResponseSchema = z.object({
   isAccepted: z.boolean({ required_error: "The acceptance is required" })
 })
 
-const urlSchema = z.string({ required_error: "The URL is required" })
-  .url()
-
 const fileSchema = z.object({
   name: z.string({ required_error: "The name is required" })
     .min(1, "The length of the name must be greater than or equal to 1")
@@ -78,7 +75,7 @@ export const elementSchema = z.object({
   password: z.string({ required_error: "The password is required" })
     .max(32, "The length of the password must be less than or equal to 32")
     .optional(),
-  urls: z.array(urlSchema, { required_error: "The URLs are required" })
+  urls: z.array(z.string({ required_error: "The URL is required" }), { required_error: "The URLs are required" })
     .optional(),
   note: z.string({ required_error: "The note is required" })
     .max(512, "The length of the note must be less than or equal to 512")
