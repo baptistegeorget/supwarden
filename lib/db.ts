@@ -210,34 +210,6 @@ export async function getMembersByFolderId(id: string) {
   return members
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export async function createElement(element: ElementModel) {
   const client = await clientPromise
 
@@ -250,89 +222,14 @@ export async function createElement(element: ElementModel) {
   return result
 }
 
-
-
-// Deletions
-
-export async function deleteElement(elementId: string) {
+export async function getElementsByFolderId(id: string) {
   const client = await clientPromise
 
   const db = client.db()
 
   const elementsCollection = db.collection<ElementModel>("elements")
 
-  const result = await elementsCollection.deleteOne({ _id: new ObjectId(elementId) })
-
-  return result
-}
-
-// Updates
-
-export async function updateFolder(folder: WithId<FolderModel>) {
-  const client = await clientPromise
-
-  const db = client.db()
-
-  const foldersCollection = db.collection<FolderModel>("folders")
-
-  const result = await foldersCollection.updateOne({ _id: folder._id }, { $set: folder })
-
-  return result
-}
-
-
-
-// Getters
-
-
-
-
-
-
-
-export async function getMemberById(id: string) {
-  const client = await clientPromise
-
-  const db = client.db()
-
-  const membersCollection = db.collection<MemberModel>("members")
-
-  const member = await membersCollection.findOne({ _id: new ObjectId(id) })
-
-  return member
-}
-
-export async function getElementById(id: string) {
-  const client = await clientPromise
-
-  const db = client.db()
-
-  const elementsCollection = db.collection<ElementModel>("elements")
-
-  const element = await elementsCollection.findOne({ _id: new ObjectId(id) })
-
-  return element
-}
-
-
-
-
-
-
-
-
-
-export async function getElementsByFolderId(folderId: string) {
-  const client = await clientPromise
-
-  const db = client.db()
-
-  const elementsCollection = db.collection<ElementModel>("elements")
-
-  const elements = await elementsCollection.find({ folderId: new ObjectId(folderId) }).toArray()
+  const elements = await elementsCollection.find({ folder: new ObjectId(id) }).toArray()
 
   return elements
 }
-
-
-

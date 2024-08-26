@@ -39,31 +39,54 @@ export const invitationResponseSchema = z.object({
   response: z.boolean({ required_error: "The response is required" })
 })
 
+const urlSchema = z.string({ required_error: "The URL is required" })
+  .url()
+
 const fileSchema = z.object({
-  name: z.string().min(1).max(256),
-  data: z.string().regex(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).base64/)
+  name: z.string({ required_error: "The name is required" })
+    .min(1, "The length of the name must be greater than or equal to 1")
+    .max(256, "The length of the name must be less than or equal to 256"),
+  data: z.string({ required_error: "The data is required" })
+    .regex(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).base64/, "The data must be a base64 encoded string")
 })
 
 const customFieldSchema = z.object({
-  type: z.enum(["visible", "hidden", "attachment"]),
+  type: z.enum(["visible", "hidden", "attachment"], { required_error: "The type is required" }),
   value: z.union([
-    z.string().min(1).max(32),
+    z.string({ required_error: "The value is required" })
+      .min(1, "The length of the value must be greater than or equal to 1")
+      .max(32, "The length of the value must be less than or equal to 32"),
     fileSchema
   ])
 }).refine((data) => {
   if (data.type === "attachment") {
-    return fileSchema.safeParse(data.value).success;
+    return fileSchema.safeParse(data.value).success
   }
-  return z.string().safeParse(data.value).success;
+  return z.string().safeParse(data.value).success
 })
 
+const idSchema = z.string({ required_error: "The ID is required" })
+  .regex(/^[a-fA-F0-9]{24}$/)
+
 export const elementSchema = z.object({
-  name: z.string().min(1).max(32),
-  identifier: z.string().max(32).optional(),
-  password: z.string().max(32).optional(),
-  urls: z.array(z.string().url()).optional(),
-  note: z.string().max(512).optional(),
-  customFields: z.array(customFieldSchema).optional(),
-  idsOfMembersWhoCanEdit: z.array(z.string().regex(/^[a-fA-F0-9]{24}$/)).optional(),
-  isSensitive: z.boolean().optional()
+  name: z.string({ required_error: "The name is required" })
+    .min(1, "The length of the name must be greater than or equal to 1")
+    .max(32, "The length of the name must be less than or equal to 32"),
+  identifier: z.string({ required_error: "The identifier is required" })
+    .max(32, "The length of the identifier must be less than or equal to 32")
+    .optional(),
+  password: z.string({ required_error: "The password is required" })
+    .max(32, "The length of the password must be less than or equal to 32")
+    .optional(),
+  urls: z.array(urlSchema, { required_error: "The URLs are required" })
+    .optional(),
+  note: z.string({ required_error: "The note is required" })
+    .max(512, "The length of the note must be less than or equal to 512")
+    .optional(),
+  customFields: z.array(customFieldSchema, { required_error: "The custom fields are required" })
+    .optional(),
+  idsOfMembersWhoCanEdit: z.array(idSchema, { required_error: "The IDs of the members who can edit are required" })
+    .optional(),
+  isSensitive: z.boolean({ required_error: "The sensitivity is required" })
+    .optional()
 })

@@ -100,56 +100,58 @@ export type InvitationResponse = {
   modifiedOn: string
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-export type CustomField = {
-  type: "visible" | "hidden" | "attachment",
-  value: string | { name: string, data: string }
-}
-
 export type ElementModel = {
-  folderId: ObjectId,
+  folder: ObjectId,
   name: string,
   identifier?: string,
   password?: string,
   urls?: string[],
   note?: string,
-  customFields?: CustomField[],
+  customFields?: {
+    type: "visible" | "hidden" | "attachment",
+    value: string | {
+      name: string,
+      data: string
+    }
+  }[],
   idsOfMembersWhoCanEdit?: string[],
   isSensitive?: boolean,
-  creatorId: ObjectId,
+  createdBy: ObjectId,
   createdOn: string,
-  modifierId: ObjectId,
+  modifiedBy: ObjectId,
   modifiedOn: string
 }
 
 export type ElementResponse = {
   id: string,
-  folder: FolderResponse,
+  folder: {
+    id: string,
+    name: string
+  },
   name: string,
   identifier?: string,
   password?: string,
   urls?: string[],
   note?: string,
-  customFields?: CustomField[],
-  membersWhoCanEdit?: MemberResponse[],
+  customFields?: {
+    type: "visible" | "hidden" | "attachment",
+    value: string | {
+      name: string,
+      data: string
+    }
+  }[],
+  idsOfMembersWhoCanEdit?: string[],
   isSensitive?: boolean,
-  creator: UserResponse,
+  createdBy: {
+    id: string,
+    name: string,
+    email: string
+  },
   createdOn: string,
-  modifier: UserResponse,
+  modifiedBy: {
+    id: string,
+    name: string,
+    email: string
+  },
   modifiedOn: string
 }
-
