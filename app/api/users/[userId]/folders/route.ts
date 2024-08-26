@@ -56,7 +56,7 @@ export async function POST(request: Request, { params }: { params: { userId: str
       )
     }
 
-    // Get and validate the body
+    // Get and parse the body
     const body = await request.json()
     const data = await folderSchema.parseAsync(body)
 
