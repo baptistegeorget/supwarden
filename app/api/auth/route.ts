@@ -14,7 +14,7 @@ const JWT_SECRET = process.env.JWT_SECRET
 
 export async function POST(request: Request) {
   try {
-    // Get and validate the body
+    // Get and parse the body
     const body = await request.json()
     const data = await signInSchema.parseAsync(body)
 
