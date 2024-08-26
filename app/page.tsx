@@ -1,29 +1,22 @@
 "use client"
 
-import FolderForm from "@/components/FolderForm"
 import Header from "@/components/Header"
-import FoldersList from "@/components/FoldersList"
-import { SessionResponse, FolderResponse, ElementResponse, UserResponse } from "@/types"
+import { SessionResponse, FolderResponse, ElementResponse } from "@/types"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useNotification } from "@/components/providers/NotificationProvider"
-import ElementForm from "@/components/forms/ElementForm"
-import InvitationFormPopupButton from "@/components/InvitationFormPopupButton"
-import ElementsList from "@/components/lists/ElementsList"
 import { getSession } from "@/lib/auth"
-import MemberPanel from "@/components/MemberPanel"
+import MembersPanel from "@/components/MembersPanel"
+import ElementFormPanel from "@/components/ElementFormPanel"
+import FoldersPanel from "@/components/FoldersPanel"
 
 export default function HomePage() {
   const notify = useNotification()
   const router = useRouter()
   const [session, setSession] = useState<SessionResponse | null>(null)
-  const [folders, setFolders] = useState<FolderResponse[]>([])
   const [selectedFolder, setSelectedFolder] = useState<FolderResponse | undefined>(undefined)
-  const [elements, setElements] = useState<ElementResponse[]>([])
-  const [selectedElement, setSelectedElement] = useState<ElementResponse | null>(null)
-  // Messages here
-  const [rightPanelView, setRightPanelView] = useState<"member" | "form" | "message">("member")
-  const [elementFormMode, setElementFormMode] = useState<"new" | "edit" | "view">("new")
+  const [selectedElement, setSelectedElement] = useState<ElementResponse | undefined>(undefined)
+  const [rightPanelView, setRightPanelView] = useState<"members" | "element-form" | "messages">("members")
 
   useEffect(() => {
     getSession()
@@ -36,104 +29,21 @@ export default function HomePage() {
       })
   }, [router])
 
-  useEffect(() => {
-    if (session) {
-      getFolders(session)
-    }
-  }, [session])
-
-  useEffect(() => {
-    if (folders.length > 0 && !selectedFolder) {
-      setSelectedFolder(folders[0])
-    }
-  }, [folders, selectedFolder])
-
-  useEffect(() => {
-    setSelectedElement(null)
-    setElementFormMode("new")
-    setRightPanelView("member")
-    if (selectedFolder) {
-      getElements(selectedFolder.id)
-    }
-  }, [selectedFolder])
-
-  async function getFolders(session: SessionResponse) {
-    const response = await fetch(`/api/users/${session.user.id}/folders`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    if (response.ok) {
-      const { folders }: { folders: FolderResponse[] } = await response.json()
-
-      return setFolders(folders)
-    } else {
-      return setFolders([])
-    }
-  }
-
-  async function getElements(folderId: string) {
-    const response = await fetch(`/api/elements?folderId=${folderId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    if (response.ok) {
-      const { elements } = await response.json()
-      return setElements(elements)
-    } else {
-      return setElements([])
-    }
-  }
-
-  async function deleteElement(elementId: string) {
-    const response = await fetch(`/api/elements?elementId=${elementId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    if (response.ok) {
-      notify("Element deleted successfully", "success")
-      setSelectedElement(null)
-      setElementFormMode("new")
-      if (selectedFolder) {
-        getElements(selectedFolder.id)
-      }
-    } else {
-      notify("Failed to delete element", "error")
-    }
-  }
-
   if (!session) return null
 
   return (
     <>
       <Header session={session} />
       <div className="flex-1 flex min-h-0">
-        <aside className="flex flex-col py-4 px-8 gap-2 border-r border-neutral-700 w-96 overflow-auto scrollbar-thin">
-          <div className="flex gap-2">
-            <FolderForm
-              session={session}
-              onSuccess={(successMessage) => {
-                notify(successMessage, "success")
-                getFolders(session)
-              }}
-              onFailure={(errorMessage) => notify(errorMessage, "error")}
-            />
-            <button onClick={() => getFolders(session)}>
-              <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16.052 5.029a1 1 0 0 0 .189 1.401 7.002 7.002 0 0 1-3.157 12.487l.709-.71a1 1 0 0 0-1.414-1.414l-2.5 2.5a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 1.414-1.414l-.843-.842A9.001 9.001 0 0 0 17.453 4.84a1 1 0 0 0-1.401.189Zm-1.93-1.736-2.5-2.5a1 1 0 0 0-1.498 1.32l.083.094.843.843a9.001 9.001 0 0 0-4.778 15.892A1 1 0 0 0 7.545 17.4a7.002 7.002 0 0 1 3.37-12.316l-.708.709a1 1 0 0 0 1.32 1.497l.094-.083 2.5-2.5a1 1 0 0 0 .083-1.32l-.083-.094Z" fill="#ffffff" /></svg>
-            </button>
-          </div>
-          <FoldersList
-            folders={folders}
-            selectedFolder={selectedFolder}
-            onSelect={(folder) => setSelectedFolder(folder)}
-          />
-        </aside>
-        {selectedFolder && (
+        <FoldersPanel
+          session={session}
+          onSelect={(folder) => {
+            setSelectedFolder(folder)
+            setSelectedElement(undefined)
+            setRightPanelView("members")
+          }}
+        />
+        {/* {selectedFolder && (
           <main className="flex-1 flex flex-col items-center py-4 px-8 gap-2 overflow-auto scrollbar-thin">
             <div className="flex gap-2 w-full justify-between h-8">
               <h2 className="text-xl font-bold">{selectedFolder.name}</h2>
@@ -171,16 +81,13 @@ export default function HomePage() {
               }}
             />
           </main>
-        )}
-        {selectedFolder && rightPanelView === "member" && <MemberPanel session={session} folder={selectedFolder} />}
-        {selectedFolder && (
+        )} */}
+        {selectedFolder && rightPanelView === "members" && <MembersPanel session={session} folder={selectedFolder} />}
+        {selectedFolder && rightPanelView === "messages" && <></>}
+        {selectedFolder && rightPanelView === "element-form" && <ElementFormPanel session={session} folder={selectedFolder} element={selectedElement} />}
+        {/* {selectedFolder && (
           <aside className="flex flex-col py-4 px-8 gap-2 border-l border-neutral-700 w-96 overflow-auto scrollbar-thin">
-            {rightPanelView === "message" && (
-              <div className="flex-1 flex items-center justify-center">
-                <p className="text-neutral-500">No message</p>
-              </div>
-            )}
-            {rightPanelView === "form" && (
+            {panelView === "form" && (
               <>
                 <div className="flex gap-2 justify-between">
                   <h2 className="text-xl font-bold">{elementFormMode === "new" ? "New" : elementFormMode === "edit" ? "Edit" : "View"}</h2>
@@ -191,7 +98,7 @@ export default function HomePage() {
                           <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m4.21 4.387.083-.094a1 1 0 0 1 1.32-.083l.094.083L12 10.585l6.293-6.292a1 1 0 1 1 1.414 1.414L13.415 12l6.292 6.293a1 1 0 0 1 .083 1.32l-.083.094a1 1 0 0 1-1.32.083l-.094-.083L12 13.415l-6.293 6.292a1 1 0 0 1-1.414-1.414L10.585 12 4.293 5.707a1 1 0 0 1-.083-1.32l.083-.094-.083.094Z" fill="#ffffff" /></svg>
                         </button>
                       )}
-                      {elementFormMode === "view" && (selectedFolder.createdBy.id === session.user.id || selectedElement.creator.id === session.user.id || selectedElement.membersWhoCanEdit?.some(member => member.user.id === session.user.id)) && (
+                      {elementFormMode === "view" && (selectedFolder.createdBy.id === session.user.id || selectedElement.createdBy.id === session.user.id || selectedElement.membersWhoCanEdit?.some(member => member.user.id === session.user.id)) && (
                         <>
                           <button onClick={() => setElementFormMode("edit")}>
                             <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13.94 5 19 10.06 9.062 20a2.25 2.25 0 0 1-.999.58l-5.116 1.395a.75.75 0 0 1-.92-.921l1.395-5.116a2.25 2.25 0 0 1 .58-.999L13.938 5Zm7.09-2.03a3.578 3.578 0 0 1 0 5.06l-.97.97L15 3.94l.97-.97a3.578 3.578 0 0 1 5.06 0Z" fill="#ffffff" /></svg>
@@ -220,7 +127,7 @@ export default function HomePage() {
               </>
             )}
           </aside>
-        )}
+        )} */}
       </div>
     </>
   )
