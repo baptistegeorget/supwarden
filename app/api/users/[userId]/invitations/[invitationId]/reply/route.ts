@@ -92,7 +92,7 @@ export async function POST(request: Request, { params }: { params: { userId: str
     const data = await invitationResponseSchema.parseAsync(body)
 
     // Update the invitation
-    invitation.status = data.response ? "accepted" : "rejected"
+    invitation.status = data.isAccepted ? "accepted" : "rejected"
     invitation.modifiedBy = user._id
     invitation.modifiedOn = new Date().toISOString()
     

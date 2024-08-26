@@ -36,7 +36,7 @@ export const invitationSchema = z.object({
 })
 
 export const invitationResponseSchema = z.object({
-  response: z.boolean({ required_error: "The response is required" })
+  isAccepted: z.boolean({ required_error: "The acceptance is required" })
 })
 
 const urlSchema = z.string({ required_error: "The URL is required" })
