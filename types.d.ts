@@ -19,7 +19,7 @@ export type UserResponse = {
 
 export type FolderModel = {
   name: string,
-  type: "personal" | "shared",
+  type: "private" | "shared",
   createdBy: ObjectId,
   createdOn: string,
   modifiedBy: ObjectId,
@@ -29,7 +29,7 @@ export type FolderModel = {
 export type FolderResponse = {
   id: string,
   name: string,
-  type: "personal" | "shared",
+  type: "private" | "shared",
   createdBy: {
     id: string,
     name: string,
