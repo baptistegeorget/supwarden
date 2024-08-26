@@ -60,12 +60,12 @@ export default function FoldersPanel({
   }
 
   return (
-    <aside className="p-8 border-r border-neutral-700 w-96 overflow-auto scrollbar-thin flex flex-col gap-2">
+    <aside className="p-8 border-r border-neutral-700 w-96 flex flex-col gap-4">
       <form onSubmit={submitForm} className="flex gap-2 items-center w-full">
         <input type="text" name="name" placeholder="Enter folder name..." className="px-2 py-1 rounded bg-transparent border border-neutral-700 w-full" />
         <button type="submit" className="px-2 py-1 rounded bg-white text-black">Create</button>
       </form>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 overflow-auto scrollbar-thin">
         {folders.map((folder) => (
           <button
             key={folder.id}
