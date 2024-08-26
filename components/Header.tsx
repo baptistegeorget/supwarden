@@ -36,7 +36,7 @@ export default function Header({
     }
   }
 
-  async function reply(userId: string, invitationId: string, isAccepted: boolean) {
+  async function replyToInvitation(userId: string, invitationId: string, isAccepted: boolean) {
     const response = await fetch(`/api/users/${userId}/invitations/${invitationId}/reply`, {
       method: "POST",
       headers: {
@@ -89,10 +89,10 @@ export default function Header({
                 {invitations.map((invitation) => (
                   <div key={invitation.id} className="flex gap-2 items-center">
                     <p><b>{invitation.createdBy.name}</b> invited you to join <b>{invitation.folder.name}</b></p>
-                    <button onClick={() => reply(session.user.id, invitation.id, true)}>
+                    <button onClick={() => replyToInvitation(session.user.id, invitation.id, true)}>
                       <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z" fill="#ffffff" /></svg>
                     </button>
-                    <button onClick={() => reply(session.user.id, invitation.id, false)}>
+                    <button onClick={() => replyToInvitation(session.user.id, invitation.id, false)}>
                       <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m4.21 4.387.083-.094a1 1 0 0 1 1.32-.083l.094.083L12 10.585l6.293-6.292a1 1 0 1 1 1.414 1.414L13.415 12l6.292 6.293a1 1 0 0 1 .083 1.32l-.083.094a1 1 0 0 1-1.32.083l-.094-.083L12 13.415l-6.293 6.292a1 1 0 0 1-1.414-1.414L10.585 12 4.293 5.707a1 1 0 0 1-.083-1.32l.083-.094-.083.094Z" fill="#ffffff" /></svg>
                     </button>
                   </div>
