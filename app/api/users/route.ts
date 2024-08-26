@@ -38,10 +38,10 @@ export async function POST(request: Request) {
 
     const user = await createUser(userModel)
 
-    // Create the personal folder for the user
+    // Create the private folder for the user
     const folderModel: FolderModel = {
       name: "Personal",
-      type: "personal",
+      type: "private",
       createdBy: user.insertedId,
       createdOn: new Date().toISOString(),
       modifiedBy: user.insertedId,

@@ -89,11 +89,11 @@ export async function POST(request: Request, { params }: { params: { userId: str
       )
     }
 
-    // Check if the folder is personal
-    if (folder.type === "personal") {
+    // Check if the folder is private
+    if (folder.type === "private") {
       return new Response(
         JSON.stringify({
-          error: "You can't invite users to a personal folder"
+          error: "You can't invite users to a private folder"
         }),
         {
           status: 400,

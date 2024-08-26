@@ -3,7 +3,7 @@ import { checkIfMemberExist, getFolderById, getMembersByFolderId, getUserById } 
 import { UserModel, UserResponse } from "@/types"
 import { WithId } from "mongodb"
 
-export async function GET(request: Request, { params }: { params: { userId: string, folderId: string } }) {
+export async function GET(_request: Request, { params }: { params: { userId: string, folderId: string } }) {
   try {
     // Get the session
     const session = await getSession()
