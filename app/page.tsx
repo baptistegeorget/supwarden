@@ -46,10 +46,16 @@ export default function HomePage() {
           <ElementsPanel
             session={session}
             folder={selectedFolder}
-            onSelect={(element) => {
+            onSelectElement={(element) => {
               setSelectedElement(element)
               setRightPanelView("element-form")
             }}
+            onSelectNew={() => {
+              setSelectedElement(undefined)
+              setRightPanelView("element-form")
+            }}
+            onSelectMessages={() => setRightPanelView("messages")}
+            onSelectMembers={() => setRightPanelView("members")}
           />
         )}
         {selectedFolder && rightPanelView === "members" && (
