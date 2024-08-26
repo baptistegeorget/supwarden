@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 
     // Create the private folder for the user
     const folderModel: FolderModel = {
-      name: "Personal",
+      name: "Private",
       type: "private",
       createdBy: user.insertedId,
       createdOn: new Date().toISOString(),
