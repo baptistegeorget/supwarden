@@ -1,5 +1,5 @@
 import { getSession } from "@/lib/auth"
-import { checkIfMemberExist, getElementById, getFolderById, getUserById, updateElement } from "@/lib/db"
+import { checkIfMemberExist, deleteElement, getElementById, getFolderById, getUserById, updateElement } from "@/lib/db"
 import { elementSchema } from "@/lib/zod"
 import { ZodError } from "zod"
 
@@ -165,6 +165,166 @@ export async function PUT(request: Request, { params }: { params: { userId: stri
         }
       )
     }
+    if (error instanceof Error) {
+      return new Response(
+        JSON.stringify({
+          error: error.message
+        }),
+        {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+    }
+    return new Response(
+      JSON.stringify({
+        error: "An unknown error occurred"
+      }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    )
+  }
+}
+
+export async function DELETE(request: Request, { params }: { params: { userId: string, folderId: string, elementId: string } }) {
+  try {
+    // Get the session
+    const session = await getSession()
+
+    if (!session) {
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized"
+        }),
+        {
+          status: 401,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+    }
+
+    // Get the user
+    const user = await getUserById(params.userId)
+
+    if (!user) {
+      return new Response(
+        JSON.stringify({
+          error: "User not found"
+        }),
+        {
+          status: 404,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+    }
+
+    // Check if the user is the same as the session user
+    if (session.user.id !== user._id.toHexString()) {
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized"
+        }),
+        {
+          status: 401,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+    }
+
+    // Get the folder
+    const folder = await getFolderById(params.folderId)
+
+    if (!folder) {
+      return new Response(
+        JSON.stringify({
+          error: "Folder not found"
+        }),
+        {
+          status: 404,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+    }
+
+    // Check if the user is a member of the folder
+    const isMember = await checkIfMemberExist(user._id.toHexString(), folder._id.toHexString())
+
+    if (!isMember) {
+      return new Response(
+        JSON.stringify({
+          error: "Folder not found"
+        }),
+        {
+          status: 404,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+    }
+
+    // Get the element
+    const element = await getElementById(params.elementId)
+
+    if (!element) {
+      return new Response(
+        JSON.stringify({
+          error: "Element not found"
+        }),
+        {
+          status: 404,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+    }
+
+    // Check if the user has authorization to update the element
+    if (folder.createdBy.toHexString() !== user._id.toHexString() && element.createdBy.toHexString() !== user._id.toHexString() && !element.idsOfMembersWhoCanEdit?.includes(user._id.toHexString())) {
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized"
+        }),
+        {
+          status: 401,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+    }
+
+    // Delete the element
+    await deleteElement(element)
+
+    // Return the response
+    return new Response(
+      JSON.stringify({
+        message: "Element deleted successfully"
+      }),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    )
+  } catch (error) {
     if (error instanceof Error) {
       return new Response(
         JSON.stringify({

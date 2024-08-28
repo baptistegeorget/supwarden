@@ -233,3 +233,39 @@ export async function getElementsByFolderId(id: string) {
 
   return elements
 }
+
+export async function getElementById(id: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const elementsCollection = db.collection<ElementModel>("elements")
+
+  const element = await elementsCollection.findOne({ _id: new ObjectId(id) })
+
+  return element
+}
+
+export async function updateElement(element: WithId<ElementModel>) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const elementsCollection = db.collection<ElementModel>("elements")
+
+  const result = await elementsCollection.updateOne({ _id: element._id }, { $set: element })
+
+  return result
+}
+
+export async function deleteElement(element: WithId<ElementModel>) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const elementsCollection = db.collection<ElementModel>("elements")
+
+  const result = await elementsCollection.deleteOne({ _id: element._id })
+
+  return result
+}
