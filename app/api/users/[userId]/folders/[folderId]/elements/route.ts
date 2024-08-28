@@ -95,25 +95,23 @@ export async function POST(request: Request, { params }: { params: { userId: str
     const data = await elementSchema.parseAsync(body)
 
     // Check if the members exist
-    if (data.idsOfMembersWhoCanEdit) {
-      data.idsOfMembersWhoCanEdit.forEach(async (id) => {
-        const isMember = await checkIfMemberExist(id, folder._id.toHexString())
+    data.idsOfMembersWhoCanEdit.forEach(async (id) => {
+      const isMember = await checkIfMemberExist(id, folder._id.toHexString())
 
-        if (!isMember) {
-          return new Response(
-            JSON.stringify({
-              error: "Member not found"
-            }),
-            {
-              status: 404,
-              headers: {
-                "Content-Type": "application/json"
-              }
+      if (!isMember) {
+        return new Response(
+          JSON.stringify({
+            error: "Member not found"
+          }),
+          {
+            status: 404,
+            headers: {
+              "Content-Type": "application/json"
             }
-          )
-        }
-      })
-    }
+          }
+        )
+      }
+    })
 
     // Create the element
     const elementModel: ElementModel = {

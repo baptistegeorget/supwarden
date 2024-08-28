@@ -106,7 +106,7 @@ export async function PUT(request: Request, { params }: { params: { userId: stri
     }
 
     // Check if the user has authorization to update the element
-    if (folder.createdBy.toHexString() !== user._id.toHexString() && element.createdBy.toHexString() !== user._id.toHexString() && !element.idsOfMembersWhoCanEdit?.includes(user._id.toHexString())) {
+    if (folder.createdBy.toHexString() !== user._id.toHexString() && element.createdBy.toHexString() !== user._id.toHexString() && !element.idsOfMembersWhoCanEdit.includes(user._id.toHexString())) {
       return new Response(
         JSON.stringify({
           error: "Unauthorized"
@@ -295,7 +295,7 @@ export async function DELETE(request: Request, { params }: { params: { userId: s
     }
 
     // Check if the user has authorization to update the element
-    if (folder.createdBy.toHexString() !== user._id.toHexString() && element.createdBy.toHexString() !== user._id.toHexString() && !element.idsOfMembersWhoCanEdit?.includes(user._id.toHexString())) {
+    if (folder.createdBy.toHexString() !== user._id.toHexString() && element.createdBy.toHexString() !== user._id.toHexString() && !element.idsOfMembersWhoCanEdit.includes(user._id.toHexString())) {
       return new Response(
         JSON.stringify({
           error: "Unauthorized"
