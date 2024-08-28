@@ -103,19 +103,19 @@ export type InvitationResponse = {
 export type ElementModel = {
   folder: ObjectId,
   name: string,
-  identifier?: string,
-  password?: string,
-  urls?: string[],
-  note?: string,
-  customFields?: {
+  identifier: string,
+  password: string,
+  urls: string[],
+  note: string,
+  customFields: {
     type: "visible" | "hidden" | "attachment",
     value: string | {
       name: string,
       data: string
     }
   }[],
-  idsOfMembersWhoCanEdit?: string[],
-  isSensitive?: boolean,
+  idsOfMembersWhoCanEdit: string[],
+  isSensitive: boolean,
   createdBy: ObjectId,
   createdOn: string,
   modifiedBy: ObjectId,
@@ -129,19 +129,19 @@ export type ElementResponse = {
     name: string
   },
   name: string,
-  identifier?: string,
-  password?: string,
-  urls?: string[],
-  note?: string,
-  customFields?: {
+  identifier: string,
+  password: string,
+  urls: string[],
+  note: string,
+  customFields: {
     type: "visible" | "hidden" | "attachment",
     value: string | {
       name: string,
       data: string
     }
   }[],
-  idsOfMembersWhoCanEdit?: string[],
-  isSensitive?: boolean,
+  idsOfMembersWhoCanEdit: string[],
+  isSensitive: boolean,
   createdBy: {
     id: string,
     name: string,
