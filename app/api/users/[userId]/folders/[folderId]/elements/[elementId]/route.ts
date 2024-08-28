@@ -1,6 +1,8 @@
 import { getSession } from "@/lib/auth"
 import { checkIfMemberExist, deleteElement, getElementById, getFolderById, getUserById, updateElement } from "@/lib/db"
 import { elementSchema } from "@/lib/zod"
+import { ElementResponse, UserModel } from "@/types"
+import { WithId } from "mongodb"
 import { ZodError } from "zod"
 
 export async function PUT(request: Request, { params }: { params: { userId: string, folderId: string, elementId: string } }) {
@@ -139,9 +141,41 @@ export async function PUT(request: Request, { params }: { params: { userId: stri
     await updateElement(element)
 
     // Return the response
+    const createdBy = await getUserById(element.createdBy.toHexString()) as WithId<UserModel>
+    const modifiedBy = await getUserById(element.modifiedBy.toHexString()) as WithId<UserModel>
+
+    const elementResponse: ElementResponse = {
+      id: element._id.toHexString(),
+      folder: {
+        id: folder._id.toHexString(),
+        name: folder.name
+      },
+      name: element.name,
+      identifier: element.identifier,
+      password: element.password,
+      urls: element.urls,
+      note: element.note,
+      customFields: element.customFields,
+      idsOfMembersWhoCanEdit: element.idsOfMembersWhoCanEdit,
+      isSensitive: element.isSensitive,
+      createdBy: {
+        id: createdBy._id.toHexString(),
+        name: createdBy.name,
+        email: createdBy.email
+      },
+      createdOn: element.createdOn,
+      modifiedBy: {
+        id: modifiedBy._id.toHexString(),
+        name: modifiedBy.name,
+        email: modifiedBy.email
+      },
+      modifiedOn: element.modifiedOn
+    }
+
     return new Response(
       JSON.stringify({
-        message: "Element updated successfully"
+        message: "Element updated successfully",
+        element: elementResponse
       }),
       {
         status: 200,
