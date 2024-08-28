@@ -18,6 +18,12 @@ export default function FoldersPanel({
     fetchFolders(session.user.id)
   }, [session])
 
+  useEffect(() => {
+    if (!selectedFolder && folders.length > 0) {
+      onSelect?.(folders[0])
+    }
+  }, [folders, onSelect, selectedFolder])
+
   async function fetchFolders(userId: string) {
     const response = await fetch(`/api/users/${userId}/folders`, {
       method: "GET",
@@ -50,10 +56,11 @@ export default function FoldersPanel({
     })
 
     if (response.ok) {
-      const { message }: { message: string } = await response.json()
+      const { message, folder }: { message: string, folder: FolderResponse } = await response.json()
       notify(message, "success")
       form.reset()
-      fetchFolders(session.user.id)
+      await fetchFolders(session.user.id)
+      onSelect?.(folder)
     } else {
       const { error }: { error: string } = await response.json()
       notify(error, "error")
