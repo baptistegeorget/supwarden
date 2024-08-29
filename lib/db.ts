@@ -222,14 +222,21 @@ export async function createElement(element: ElementModel) {
   return result
 }
 
-export async function getElementsByFolderId(id: string) {
+export async function getElementsByFolderId(id: string, query?: string) {
+  // cherche les elements, et si query est renseigné, cherche les elements qui contiennent query dans leur nom ou dans l'array urls
   const client = await clientPromise
 
   const db = client.db()
 
   const elementsCollection = db.collection<ElementModel>("elements")
 
-  const elements = await elementsCollection.find({ folder: new ObjectId(id) }).toArray()
+  const elements = await elementsCollection.find({
+    folder: new ObjectId(id),
+    $or: [
+      { name: { $regex: query, $options: "i" } },
+      { urls: { $elemMatch: { $regex: query, $options: "i" } } }
+    ]
+  }).toArray()
 
   return elements
 }

@@ -5,6 +5,7 @@ import { ElementResponse, ElementModel, UserModel } from "@/types"
 import { WithId } from "mongodb"
 import { ZodError } from "zod"
 import CryptoJS from "crypto-js"
+import { NextRequest } from "next/server"
 
 if (!process.env.ENCRYPTION_KEY) {
   throw new Error("Invalid/Missing environment variable: ENCRYPTION_KEY")
@@ -229,7 +230,7 @@ export async function POST(request: Request, { params }: { params: { userId: str
   }
 }
 
-export async function GET(_request: Request, { params }: { params: { userId: string, folderId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { userId: string, folderId: string } }) {
   try {
     // Get the session
     const session = await getSession()
@@ -315,7 +316,7 @@ export async function GET(_request: Request, { params }: { params: { userId: str
     }
 
     // Get the elements
-    const elements = await getElementsByFolderId(folder._id.toHexString())
+    const elements = await getElementsByFolderId(folder._id.toHexString(), request.nextUrl.searchParams.get("query") || "")
 
     // Return the response
     const elementsResponse: ElementResponse[] = await Promise.all(elements.map(async (element) => {
