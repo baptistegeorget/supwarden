@@ -49,7 +49,8 @@ export async function POST(request: Request) {
       user: {
         id: user._id.toHexString(),
         name: user.name,
-        email: user.email
+        email: user.email,
+        hasPin: !!user.pin
       },
       createdOn: sessionModel.createdOn
     }

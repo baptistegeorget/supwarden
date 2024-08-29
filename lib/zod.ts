@@ -75,3 +75,14 @@ export const elementSchema = z.object({
   idsOfMembersWhoCanEdit: z.array(z.string({ required_error: "The ID is required" }).regex(/^[a-fA-F0-9]{24}$/), { required_error: "The IDs of the members who can edit are required" }),
   isSensitive: z.boolean({ required_error: "The sensitivity is required" })
 })
+
+export const checkPasswordSchema = z.object({
+  password: z.string({ required_error: "The password is required" })
+    .min(8, "The length of the password must be greater than or equal to 8")
+    .max(32, "The length of the password must be less than or equal to 32")
+    .optional(),
+  pin: z.string({ required_error: "The PIN is required" })
+    .length(6, "The length of the PIN must be equal to 6")
+    .regex(/^[0-9]{6}$/, "The PIN must be a 6-digit number")
+    .optional()
+})
