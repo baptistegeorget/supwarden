@@ -4,6 +4,13 @@ import { elementSchema } from "@/lib/zod"
 import { ElementResponse, ElementModel, UserModel } from "@/types"
 import { WithId } from "mongodb"
 import { ZodError } from "zod"
+import CryptoJS from "crypto-js"
+
+if (!process.env.ENCRYPTION_KEY) {
+  throw new Error("Invalid/Missing environment variable: ENCRYPTION_KEY")
+}
+
+const encryptionKey = process.env.ENCRYPTION_KEY
 
 export async function POST(request: Request, { params }: { params: { userId: string, folderId: string } }) {
   try {
@@ -118,10 +125,13 @@ export async function POST(request: Request, { params }: { params: { userId: str
       folder: folder._id,
       name: data.name,
       identifier: data.identifier,
-      password: data.password,
+      password: CryptoJS.AES.encrypt(data.password, encryptionKey).toString(),
       urls: data.urls,
       note: data.note,
-      customFields: data.customFields,
+      customFields: data.customFields.map((customField) => {
+        if (customField.type !== "hidden") return customField
+        return { ...customField, value: CryptoJS.AES.encrypt(customField.value as string, encryptionKey).toString() }
+      }),
       idsOfMembersWhoCanEdit: data.idsOfMembersWhoCanEdit,
       isSensitive: data.isSensitive,
       createdBy: user._id,
@@ -141,10 +151,13 @@ export async function POST(request: Request, { params }: { params: { userId: str
       },
       name: elementModel.name,
       identifier: elementModel.identifier,
-      password: elementModel.password,
+      password: CryptoJS.AES.decrypt(elementModel.password, encryptionKey).toString(CryptoJS.enc.Utf8),
       urls: elementModel.urls,
       note: elementModel.note,
-      customFields: elementModel.customFields,
+      customFields: elementModel.customFields.map((customField) => {
+        if (customField.type !== "hidden") return customField
+        return { ...customField, value: CryptoJS.AES.decrypt(customField.value as string, encryptionKey).toString(CryptoJS.enc.Utf8) }
+      }),
       idsOfMembersWhoCanEdit: elementModel.idsOfMembersWhoCanEdit,
       isSensitive: elementModel.isSensitive,
       createdBy: {
@@ -317,10 +330,13 @@ export async function GET(_request: Request, { params }: { params: { userId: str
         },
         name: element.name,
         identifier: element.identifier,
-        password: element.password,
+        password: CryptoJS.AES.decrypt(element.password, encryptionKey).toString(CryptoJS.enc.Utf8),
         urls: element.urls,
         note: element.note,
-        customFields: element.customFields,
+        customFields: element.customFields.map((customField) => {
+          if (customField.type !== "hidden") return customField
+          return { ...customField, value: CryptoJS.AES.decrypt(customField.value as string, encryptionKey).toString(CryptoJS.enc.Utf8) }
+        }),
         idsOfMembersWhoCanEdit: element.idsOfMembersWhoCanEdit,
         isSensitive: element.isSensitive,
         createdBy: {

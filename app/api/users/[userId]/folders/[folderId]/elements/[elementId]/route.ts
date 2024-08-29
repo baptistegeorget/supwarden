@@ -4,6 +4,13 @@ import { elementSchema } from "@/lib/zod"
 import { ElementResponse, UserModel } from "@/types"
 import { WithId } from "mongodb"
 import { ZodError } from "zod"
+import CryptoJS from "crypto-js"
+
+if (!process.env.ENCRYPTION_KEY) {
+  throw new Error("Invalid/Missing environment variable: ENCRYPTION_KEY")
+}
+
+const encryptionKey = process.env.ENCRYPTION_KEY
 
 export async function PUT(request: Request, { params }: { params: { userId: string, folderId: string, elementId: string } }) {
   try {
@@ -129,10 +136,13 @@ export async function PUT(request: Request, { params }: { params: { userId: stri
     // Update the element
     element.name = data.name
     element.identifier = data.identifier
-    element.password = data.password
+    element.password = CryptoJS.AES.encrypt(data.password, encryptionKey).toString()
     element.urls = data.urls
     element.note = data.note
-    element.customFields = data.customFields
+    element.customFields = data.customFields.map((customField) => {
+      if (customField.type !== "hidden") return customField
+      return { ...customField, value: CryptoJS.AES.encrypt(customField.value as string, encryptionKey).toString() }
+    })
     element.idsOfMembersWhoCanEdit = data.idsOfMembersWhoCanEdit
     element.isSensitive = data.isSensitive
     element.modifiedBy = user._id
@@ -152,10 +162,13 @@ export async function PUT(request: Request, { params }: { params: { userId: stri
       },
       name: element.name,
       identifier: element.identifier,
-      password: element.password,
+      password: CryptoJS.AES.decrypt(element.password, encryptionKey).toString(CryptoJS.enc.Utf8),
       urls: element.urls,
       note: element.note,
-      customFields: element.customFields,
+      customFields: element.customFields.map((customField) => {
+        if (customField.type !== "hidden") return customField
+        return { ...customField, value: CryptoJS.AES.decrypt(customField.value as string, encryptionKey).toString(CryptoJS.enc.Utf8) }
+      }),
       idsOfMembersWhoCanEdit: element.idsOfMembersWhoCanEdit,
       isSensitive: element.isSensitive,
       createdBy: {

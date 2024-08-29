@@ -163,9 +163,9 @@ export default function HomePage() {
               await fetchElements(session.user.id, selectedFolder.id)
               setSelectedElement(element)
             }}
-            onDelete={async () => {
-              await fetchElements(session.user.id, selectedFolder.id)
+            onDelete={() => {
               setSelectedElement(null)
+              fetchElements(session.user.id, selectedFolder.id)
             }}
           />
         )}
