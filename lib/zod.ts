@@ -40,9 +40,7 @@ export const invitationResponseSchema = z.object({
 })
 
 const fileSchema = z.object({
-  name: z.string({ required_error: "The name is required" })
-    .min(1, "The length of the name must be greater than or equal to 1")
-    .max(256, "The length of the name must be less than or equal to 256"),
+  name: z.string({ required_error: "The name is required" }),
   data: z.string({ required_error: "The data is required" })
     .regex(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).base64/, "The data must be a base64 encoded string")
 })
@@ -67,14 +65,11 @@ export const elementSchema = z.object({
     .min(1, "The length of the name must be greater than or equal to 1")
     .max(32, "The length of the name must be less than or equal to 32"),
   identifier: z.string({ required_error: "The identifier is required" })
-    .min(1, "The length of the identifier must be greater than or equal to 1")
     .max(32, "The length of the identifier must be less than or equal to 32"),
   password: z.string({ required_error: "The password is required" })
-    .min(1, "The length of the password must be greater than or equal to 1")
     .max(32, "The length of the password must be less than or equal to 32"),
-  urls: z.array(z.string({ required_error: "The URL is required" }), { required_error: "The URLs are required" }),
+  urls: z.array(z.string({ required_error: "The URL is required" }).url(), { required_error: "The URLs are required" }),
   note: z.string({ required_error: "The note is required" })
-    .min(1, "The length of the note must be greater than or equal to 1")
     .max(512, "The length of the note must be less than or equal to 512"),
   customFields: z.array(customFieldSchema, { required_error: "The custom fields are required" }),
   idsOfMembersWhoCanEdit: z.array(z.string({ required_error: "The ID is required" }).regex(/^[a-fA-F0-9]{24}$/), { required_error: "The IDs of the members who can edit are required" }),
