@@ -223,7 +223,6 @@ export async function createElement(element: ElementModel) {
 }
 
 export async function getElementsByFolderId(id: string, query?: string) {
-  // cherche les elements, et si query est renseigné, cherche les elements qui contiennent query dans leur nom ou dans l'array urls
   const client = await clientPromise
 
   const db = client.db()
@@ -273,6 +272,18 @@ export async function deleteElement(element: WithId<ElementModel>) {
   const elementsCollection = db.collection<ElementModel>("elements")
 
   const result = await elementsCollection.deleteOne({ _id: element._id })
+
+  return result
+}
+
+export async function updateUser(user: WithId<UserModel>) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const usersCollection = db.collection<UserModel>("users")
+
+  const result = await usersCollection.updateOne({ _id: user._id }, { $set: user })
 
   return result
 }

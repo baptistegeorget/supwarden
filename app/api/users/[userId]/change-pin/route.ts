@@ -1,10 +1,19 @@
 import { getSession } from "@/lib/auth"
-import { getUserById } from "@/lib/db"
-import { checkPasswordOrPinSchema } from "@/lib/zod"
-import { ZodError } from "zod"
+import { createSession, getUserById, updateUser } from "@/lib/db"
+import { changePinSchema } from "@/lib/zod"
+import { SessionModel, SessionResponse } from "@/types"
 import { createHash } from "crypto"
+import { ZodError } from "zod"
+import jwt from "jsonwebtoken"
+import { cookies } from "next/headers"
 
-export async function POST(request: Request, { params }: { params: { userId: string } }) {
+if (!process.env.JWT_SECRET) {
+  throw new Error("Invalid/Missing environment variable: JWT_SECRET")
+}
+
+const JWT_SECRET = process.env.JWT_SECRET
+
+export async function PATCH(request: Request, { params }: { params: { userId: string } }) {
   try {
     // Get the session
     const session = await getSession()
@@ -57,57 +66,40 @@ export async function POST(request: Request, { params }: { params: { userId: str
 
     // Get and parse the body
     const body = await request.json()
-    const data = await checkPasswordOrPinSchema.parseAsync(body)
+    const data = await changePinSchema.parseAsync(body)
 
-    // Check if password or pin is provided
-    if (!data.password && !data.pin) {
-      return new Response(
-        JSON.stringify({
-          error: "The password or pin is required"
-        }),
-        {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      )
+    // Update the user
+    user.pin = createHash("sha256").update(data.pin).digest("hex")
+    await updateUser(user)
+
+    // Create new session
+    const sessionModel: SessionModel = {
+      user: user._id,
+      createdOn: new Date().toISOString()
     }
 
-    // Check the password
-    if (data.password && createHash("sha256").update(data.password).digest("hex") !== user.password) {
-      return new Response(
-        JSON.stringify({
-          error: "The password is incorrect"
-        }),
-        {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      )
+    const newSession = await createSession(sessionModel)
+
+    // Save the session in a cookie
+    const sessionResponse: SessionResponse = {
+      id: newSession.insertedId.toHexString(),
+      user: {
+        id: user._id.toHexString(),
+        name: user.name,
+        email: user.email,
+        hasPin: !!user.pin
+      },
+      createdOn: sessionModel.createdOn
     }
 
-    // Check the pin
-    if (data.pin && createHash("sha256").update(data.pin).digest("hex") !== user.pin) {
-      return new Response(
-        JSON.stringify({
-          error: "The pin is incorrect"
-        }),
-        {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      )
-    }
+    const token = jwt.sign(sessionResponse, JWT_SECRET, { expiresIn: "1h" })
+
+    cookies().set("auth-token", token)
 
     // Return the response
     return new Response(
       JSON.stringify({
-        message: "The password/pin is correct"
+        message: "PIN changed"
       }),
       {
         status: 200,

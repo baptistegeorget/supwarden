@@ -205,8 +205,9 @@ export default function ElementFormPanel({
                       if (!event.target.value && index > 0) {
                         document.getElementById(`pin-input-${index - 1}`)?.focus()
                       }
-
-                      if (pinCopy.every((value) => value !== "")) {
+                    }}
+                    onKeyDown={async (event) => {
+                      if (event.key === "Enter") {
                         const response = await fetch(`/api/users/${session.user.id}/check-password-or-pin`, {
                           method: "POST",
                           headers: {
@@ -217,6 +218,7 @@ export default function ElementFormPanel({
 
                         if (response.ok) {
                           setIsLocked(false)
+                          setPin(Array(6).fill(""))
                         } else {
                           const { error }: { error: string } = await response.json()
                           notify(error, "error")
@@ -232,22 +234,25 @@ export default function ElementFormPanel({
           </form>
         )}
         {!session.user.hasPin && (
-          <form action={async () => {
-            const response = await fetch(`/api/users/${session.user.id}/check-password-or-pin`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({ password: userPassword })
-            })
+          <form
+            action={async () => {
+              const response = await fetch(`/api/users/${session.user.id}/check-password-or-pin`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ password: userPassword })
+              })
 
-            if (response.ok) {
-              setIsLocked(false)
-            } else {
-              const { error }: { error: string } = await response.json()
-              notify(error, "error")
-            }
-          }}>
+              if (response.ok) {
+                setIsLocked(false)
+                setUserPassword("")
+              } else {
+                const { error }: { error: string } = await response.json()
+                notify(error, "error")
+              }
+            }}
+          >
             <div className="flex flex-col gap-1">
               <label htmlFor="password">Enter your password to unlock this element</label>
               <input
@@ -258,6 +263,9 @@ export default function ElementFormPanel({
                 className="px-2 py-1 rounded bg-transparent border border-neutral-700 w-full"
                 value={userPassword}
                 onChange={(event) => setUserPassword(event.target.value)}
+                required
+                minLength={8}
+                maxLength={32}
               />
             </div>
           </form>
@@ -317,8 +325,8 @@ export default function ElementFormPanel({
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   required
-                  min={1}
-                  max={32}
+                  minLength={1}
+                  maxLength={32}
                   readOnly={mode === "view"}
                   onClick={async (event) => {
                     if (mode === "view") {
@@ -340,7 +348,7 @@ export default function ElementFormPanel({
                   placeholder="Enter an identifier..."
                   value={identifier}
                   onChange={(event) => setIdentifier(event.target.value)}
-                  max={32}
+                  maxLength={32}
                   readOnly={mode === "view"}
                   onClick={async (event) => {
                     if (mode === "view") {
@@ -363,7 +371,7 @@ export default function ElementFormPanel({
                     placeholder="Enter a password..."
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    max={32}
+                    maxLength={32}
                     readOnly={mode === "view"}
                     onClick={async (event) => {
                       if (mode === "view") {
@@ -486,8 +494,8 @@ export default function ElementFormPanel({
                           setCustomFields(customFieldsCopy)
                         }}
                         required
-                        min={1}
-                        max={32}
+                        minLength={1}
+                        maxLength={32}
                         readOnly={mode === "view"}
                         onClick={async (event) => {
                           if (mode === "view") {

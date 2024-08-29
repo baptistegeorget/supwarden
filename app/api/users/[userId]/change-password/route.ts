@@ -1,10 +1,10 @@
 import { getSession } from "@/lib/auth"
-import { getUserById } from "@/lib/db"
-import { checkPasswordOrPinSchema } from "@/lib/zod"
-import { ZodError } from "zod"
+import { getUserById, updateUser } from "@/lib/db"
+import { changePasswordSchema } from "@/lib/zod"
 import { createHash } from "crypto"
+import { ZodError } from "zod"
 
-export async function POST(request: Request, { params }: { params: { userId: string } }) {
+export async function PATCH(request: Request, { params }: { params: { userId: string } }) {
   try {
     // Get the session
     const session = await getSession()
@@ -57,13 +57,13 @@ export async function POST(request: Request, { params }: { params: { userId: str
 
     // Get and parse the body
     const body = await request.json()
-    const data = await checkPasswordOrPinSchema.parseAsync(body)
+    const data = await changePasswordSchema.parseAsync(body)
 
-    // Check if password or pin is provided
-    if (!data.password && !data.pin) {
+    // Check password
+    if (user.password !== createHash("sha256").update(data.currentPassword).digest("hex")) {
       return new Response(
         JSON.stringify({
-          error: "The password or pin is required"
+          error: "The current password is incorrect"
         }),
         {
           status: 400,
@@ -74,40 +74,14 @@ export async function POST(request: Request, { params }: { params: { userId: str
       )
     }
 
-    // Check the password
-    if (data.password && createHash("sha256").update(data.password).digest("hex") !== user.password) {
-      return new Response(
-        JSON.stringify({
-          error: "The password is incorrect"
-        }),
-        {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      )
-    }
-
-    // Check the pin
-    if (data.pin && createHash("sha256").update(data.pin).digest("hex") !== user.pin) {
-      return new Response(
-        JSON.stringify({
-          error: "The pin is incorrect"
-        }),
-        {
-          status: 400,
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      )
-    }
+    // Update the user
+    user.password = createHash("sha256").update(data.newPassword).digest("hex")
+    await updateUser(user)
 
     // Return the response
     return new Response(
       JSON.stringify({
-        message: "The password/pin is correct"
+        message: "Password changed"
       }),
       {
         status: 200,

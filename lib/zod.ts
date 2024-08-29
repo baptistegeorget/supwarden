@@ -76,7 +76,7 @@ export const elementSchema = z.object({
   isSensitive: z.boolean({ required_error: "The sensitivity is required" })
 })
 
-export const checkPasswordSchema = z.object({
+export const checkPasswordOrPinSchema = z.object({
   password: z.string({ required_error: "The password is required" })
     .min(8, "The length of the password must be greater than or equal to 8")
     .max(32, "The length of the password must be less than or equal to 32")
@@ -85,4 +85,24 @@ export const checkPasswordSchema = z.object({
     .length(6, "The length of the PIN must be equal to 6")
     .regex(/^[0-9]{6}$/, "The PIN must be a 6-digit number")
     .optional()
+})
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string({ required_error: "The current password is required" })
+    .min(8, "The length of the current password must be greater than or equal to 8")
+    .max(32, "The length of the current password must be less than or equal to 32"),
+  newPassword: z.string({ required_error: "The new password is required" })
+    .min(8, "The length of the new password must be greater than or equal to 8")
+    .max(32, "The length of the new password must be less than or equal to 32"),
+  passwordConfirmation: z.string({ required_error: "The password confirmation is required" })
+    .min(8, "The length of the password confirmation must be greater than or equal to 8")
+    .max(32, "The length of the password confirmation must be less than or equal to 32")
+}).refine((data) => {
+  return data.newPassword === data.passwordConfirmation
+}, { message: "The passwords do not match" })
+
+export const changePinSchema = z.object({
+  pin: z.string({ required_error: "The PIN is required" })
+    .length(6, "The length of the PIN must be equal to 6")
+    .regex(/^[0-9]{6}$/, "The PIN must be a 6-digit number")
 })
