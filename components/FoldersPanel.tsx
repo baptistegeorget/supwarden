@@ -1,6 +1,6 @@
 import { FolderResponse, SessionResponse } from "@/types"
 import { useEffect, useState } from "react"
-import { useNotification } from "@/components/providers/NotificationProvider"
+import { useNotification } from "@/components/NotificationProvider"
 
 export default function FoldersPanel({
   session,

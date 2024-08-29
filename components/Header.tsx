@@ -5,7 +5,7 @@ import { InvitationResponse, SessionResponse } from "@/types"
 import { signOut } from "@/lib/auth"
 import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
-import { useNotification } from "@/components/providers/NotificationProvider"
+import { useNotification } from "@/components/NotificationProvider"
 
 export default function Header({
   session

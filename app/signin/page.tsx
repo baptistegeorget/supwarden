@@ -4,7 +4,7 @@ import Link from "next/link"
 import SignInForm from "@/components/SignInForm"
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useNotification } from "@/components/providers/NotificationProvider"
+import { useNotification } from "@/components/NotificationProvider"
 import { getSession } from "@/lib/auth"
 
 export default function SignInPage() {

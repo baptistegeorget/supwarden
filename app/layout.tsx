@@ -1,4 +1,4 @@
-import NotificationProvider from "@/components/providers/NotificationProvider"
+import NotificationProvider from "@/components/NotificationProvider"
 import "./globals.css"
 
 export default function RootLayout({
