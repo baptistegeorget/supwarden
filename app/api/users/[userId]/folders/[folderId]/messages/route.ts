@@ -222,7 +222,7 @@ export async function POST(request: Request, { params }: { params: { userId: str
   }
 }
 
-export async function GET(request: Request, { params }: { params: { userId: string, folderId: string } }) {
+export async function GET(_request: Request, { params }: { params: { userId: string, folderId: string } }) {
   try {
     // Get the session
     const session = await getSession()

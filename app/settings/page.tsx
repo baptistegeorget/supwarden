@@ -3,7 +3,7 @@
 import Header from "@/components/Header"
 import { useNotification } from "@/components/NotificationProvider"
 import { getSession } from "@/lib/auth"
-import { SessionResponse } from "@/types"
+import { ElementResponse, SessionResponse } from "@/types"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
@@ -223,6 +223,42 @@ export default function SettingsPage() {
               {!session.user.hasPin && (
                 <p className="text-neutral-700">You don&apos;t have a PIN</p>
               )}
+            </div>
+          </main>
+        )}
+        {panel === "import/export" && (
+          <main className="flex-1 flex flex-col gap-4 p-8">
+            <h2 className="text-xl font-bold w-96">Import / Export</h2>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className="px-2 py-1 rounded bg-white text-black"
+                onClick={async () => {
+                  const response = await fetch(`/api/users/${session.user.id}/export`, {
+                    method: "GET",
+                    headers: {
+                      "Content-Type": "application/json"
+                    }
+                  })
+
+                  if (response.ok) {
+                    const { elements }: { elements: ElementResponse[] } = await response.json()
+                    const elementString = JSON.stringify(elements, null, 2)
+                    const elementBlob = new Blob([elementString], { type: "application/json" })
+                    const elementUrl = URL.createObjectURL(elementBlob)
+                    const elementAnchor = document.createElement("a")
+                    elementAnchor.href = elementUrl
+                    elementAnchor.download = "export.json"
+                    elementAnchor.click()
+                    URL.revokeObjectURL(elementUrl)
+                  } else {
+                    const { error }: { error: string } = await response.json()
+                    notify(error, "error")
+                  }
+                }}
+              >
+                Export
+              </button>
             </div>
           </main>
         )}

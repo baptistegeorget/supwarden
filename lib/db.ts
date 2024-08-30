@@ -311,3 +311,23 @@ export async function getMessagesByFolderId(id: string) {
 
   return messages
 }
+
+export async function getElementsByUserId(id: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const membersCollection = db.collection<MemberModel>("members")
+
+  const members = await membersCollection.find({ user: new ObjectId(id) }).toArray()
+
+  const foldersCollection = db.collection<FolderModel>("folders")
+
+  const folders = await foldersCollection.find({ _id: { $in: members.map(member => member.folder) } }).toArray()
+
+  const elementsCollection = db.collection<ElementModel>("elements")
+
+  const elements = await elementsCollection.find({ folder: { $in: folders.map(folder => folder._id) } }).toArray()
+
+  return elements
+}
