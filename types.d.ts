@@ -156,3 +156,39 @@ export type ElementResponse = {
   },
   modifiedOn: string
 }
+
+export type MessageModel = {
+  folder: ObjectId,
+  body: string,
+  recipient?: ObjectId,
+  createdBy: ObjectId,
+  createdOn: string,
+  modifiedBy: ObjectId,
+  modifiedOn: string
+}
+
+export type MessageResponse = {
+  id: string,
+  folder: {
+    id: string,
+    name: string
+  },
+  body: string,
+  recipient?: {
+    id: string,
+    name: string,
+    email: string
+  },
+  createdBy: {
+    id: string,
+    name: string,
+    email: string
+  },
+  createdOn: string,
+  modifiedBy: {
+    id: string,
+    name: string,
+    email: string
+  },
+  modifiedOn: string
+}

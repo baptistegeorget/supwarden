@@ -10,6 +10,7 @@ import ElementFormPanel from "@/components/ElementFormPanel"
 import FoldersPanel from "@/components/FoldersPanel"
 import { createPortal } from "react-dom"
 import { useNotification } from "@/components/NotificationProvider"
+import MessagesPanel from "@/components/MessagesPanel"
 
 export default function HomePage() {
   const notify = useNotification()
@@ -39,7 +40,7 @@ export default function HomePage() {
   }, [session, selectedFolder])
 
   async function fetchElements(userId: string, folderId: string, query?: string) {
-    const response = await fetch(`/api/users/${userId}/folders/${folderId}/elements${query ? `?query=${query}`: ""}`, {
+    const response = await fetch(`/api/users/${userId}/folders/${folderId}/elements${query ? `?query=${query}` : ""}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json"
@@ -93,7 +94,7 @@ export default function HomePage() {
           onSelect={(folder) => {
             setSelectedFolder(folder)
             setSelectedElement(null)
-            setRightPanelView("members")
+            setRightPanelView(folder.type === "shared" ? "members" : "element-form")
           }}
         />
         {selectedFolder && (
@@ -117,22 +118,26 @@ export default function HomePage() {
                     <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.5 12a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11ZM4 12.999l8.81.001A6.478 6.478 0 0 0 11 17.5c0 1.087.267 2.112.739 3.013-1.05.35-2.208.487-3.239.487-2.722 0-6.335-.956-6.495-4.27L2 16.5v-1.501a2 2 0 0 1 2-2Zm13.5 1.003-.09.008a.5.5 0 0 0-.402.402l-.008.09V17h-2.5l-.09.008a.5.5 0 0 0-.402.402L14 17.5l.008.09a.5.5 0 0 0 .402.402l.09.008H17v2.5l.008.09a.5.5 0 0 0 .402.402l.09.008.09-.008a.5.5 0 0 0 .402-.402L18 20.5V18h2.5l.09-.008a.5.5 0 0 0 .402-.402L21 17.5l-.008-.09a.5.5 0 0 0-.402-.402L20.5 17H18v-2.498l-.008-.09a.5.5 0 0 0-.402-.402l-.09-.008ZM8.5 2a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Zm9 2a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7Z" fill="#ffffff" /></svg>
                   </button>
                 )}
-                <button
-                  onClick={() => {
-                    setSelectedElement(null)
-                    setRightPanelView("members")
-                  }}
-                >
-                  <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m3.5 14 10 .001a1.5 1.5 0 0 1 1.493 1.356L15 15.5V17.5C14.999 21 11.284 22 8.5 22c-2.722 0-6.335-.956-6.495-4.27L2 17.5v-2a1.5 1.5 0 0 1 1.356-1.493L3.5 14Zm11.988 0H20.5a1.5 1.5 0 0 1 1.493 1.355L22 15.5V17c-.001 3.062-2.858 4-5 4a7.16 7.16 0 0 1-2.14-.322c.653-.75 1.076-1.703 1.133-2.898L16 17.5v-2c0-.494-.15-.951-.399-1.338L15.488 14H20.5h-5.012ZM8.5 3a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Zm9 2a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7Z" fill="#ffffff" /></svg>
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedElement(null)
-                    setRightPanelView("messages")
-                  }}
-                >
-                  <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10a9.96 9.96 0 0 1-4.644-1.142l-4.29 1.117a.85.85 0 0 1-1.037-1.036l1.116-4.289A9.959 9.959 0 0 1 2 12C2 6.477 6.477 2 12 2Zm1.252 11H8.75l-.102.007a.75.75 0 0 0 0 1.486l.102.007h4.502l.101-.007a.75.75 0 0 0 0-1.486L13.252 13Zm1.998-3.5h-6.5l-.102.007a.75.75 0 0 0 0 1.486L8.75 11h6.5l.102-.007a.75.75 0 0 0 0-1.486L15.25 9.5Z" fill="#ffffff" /></svg>
-                </button>
+                {selectedFolder.type === "shared" && (
+                  <button
+                    onClick={() => {
+                      setSelectedElement(null)
+                      setRightPanelView("members")
+                    }}
+                  >
+                    <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m3.5 14 10 .001a1.5 1.5 0 0 1 1.493 1.356L15 15.5V17.5C14.999 21 11.284 22 8.5 22c-2.722 0-6.335-.956-6.495-4.27L2 17.5v-2a1.5 1.5 0 0 1 1.356-1.493L3.5 14Zm11.988 0H20.5a1.5 1.5 0 0 1 1.493 1.355L22 15.5V17c-.001 3.062-2.858 4-5 4a7.16 7.16 0 0 1-2.14-.322c.653-.75 1.076-1.703 1.133-2.898L16 17.5v-2c0-.494-.15-.951-.399-1.338L15.488 14H20.5h-5.012ZM8.5 3a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Zm9 2a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7Z" fill="#ffffff" /></svg>
+                  </button>
+                )}
+                {selectedFolder.type === "shared" && (
+                  <button
+                    onClick={() => {
+                      setSelectedElement(null)
+                      setRightPanelView("messages")
+                    }}
+                  >
+                    <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10a9.96 9.96 0 0 1-4.644-1.142l-4.29 1.117a.85.85 0 0 1-1.037-1.036l1.116-4.289A9.959 9.959 0 0 1 2 12C2 6.477 6.477 2 12 2Zm1.252 11H8.75l-.102.007a.75.75 0 0 0 0 1.486l.102.007h4.502l.101-.007a.75.75 0 0 0 0-1.486L13.252 13Zm1.998-3.5h-6.5l-.102.007a.75.75 0 0 0 0 1.486L8.75 11h6.5l.102-.007a.75.75 0 0 0 0-1.486L15.25 9.5Z" fill="#ffffff" /></svg>
+                  </button>
+                )}
                 <button
                   onClick={() => {
                     setSelectedElement(null)
@@ -181,7 +186,10 @@ export default function HomePage() {
           />
         )}
         {selectedFolder && rightPanelView === "messages" && (
-          <></>
+          <MessagesPanel
+            session={session}
+            folder={selectedFolder}
+          />
         )}
       </div>
       {isSendInvitationPopupVisible && createPortal(

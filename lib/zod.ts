@@ -106,3 +106,11 @@ export const changePinSchema = z.object({
     .length(6, "The length of the PIN must be equal to 6")
     .regex(/^[0-9]{6}$/, "The PIN must be a 6-digit number")
 })
+
+export const messageSchema = z.object({
+  body: z.string({ required_error: "The body is required" })
+    .min(1, "The length of the body must be greater than or equal to 1")
+    .max(512, "The length of the body must be less than or equal to 512"),
+  recipient: z.string({ required_error: "The ID is required" }).regex(/^[a-fA-F0-9]{24}$/)
+    .optional()
+})

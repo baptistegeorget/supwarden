@@ -1,5 +1,5 @@
 import clientPromise from "@/lib/mongodb"
-import { ElementModel, FolderModel, InvitationModel, MemberModel, SessionModel, UserModel } from "@/types"
+import { ElementModel, FolderModel, InvitationModel, MemberModel, MessageModel, SessionModel, UserModel } from "@/types"
 import { ObjectId, WithId } from "mongodb"
 
 export async function checkIfEmailIsUsed(email: string) {
@@ -286,4 +286,28 @@ export async function updateUser(user: WithId<UserModel>) {
   const result = await usersCollection.updateOne({ _id: user._id }, { $set: user })
 
   return result
+}
+
+export async function createMessage(message: MessageModel) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const messagesCollection = db.collection<MessageModel>("messages")
+
+  const result = await messagesCollection.insertOne(message)
+
+  return result
+}
+
+export async function getMessagesByFolderId(id: string) {
+  const client = await clientPromise
+
+  const db = client.db()
+
+  const messagesCollection = db.collection<MessageModel>("messages")
+
+  const messages = await messagesCollection.find({ folder: new ObjectId(id) }).toArray()
+
+  return messages
 }
