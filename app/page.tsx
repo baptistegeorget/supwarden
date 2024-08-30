@@ -148,18 +148,35 @@ export default function HomePage() {
                 </button>
               </div>
             </div>
-            <div className="flex flex-col gap-1 h-full overflow-auto scrollbar-thin">
+            <div className="flex flex-col h-full overflow-auto scrollbar-thin">
               {elements.map((element, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    setRightPanelView("element-form")
-                    setSelectedElement(element)
-                  }}
-                  className={`px-2 py-1 rounded flex gap-2 justify-between items-center ${selectedElement?.id === element.id ? "bg-white text-black" : "bg-black text-white"}`}
-                >
-                  {element.name}
-                </button>
+                <>
+                  <button
+                    key={index}
+                    onClick={() => {
+                      setRightPanelView("element-form")
+                      setSelectedElement(element)
+                    }}
+                    className={`px-2 py-1 rounded flex gap-2 justify-between items-center ${selectedElement?.id === element.id && "bg-white text-black"}`}
+                  >
+                    <div className="flex gap-2 items-center">
+                      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.95 8.6a6.554 6.554 0 0 1 6.55-6.55c3.596 0 6.55 2.819 6.55 6.45a6.554 6.554 0 0 1-6.55 6.55c-.531 0-1.055-.076-1.552-.204A1.25 1.25 0 0 1 12.7 16.05h-1.75v1.75c0 .69-.56 1.25-1.25 1.25H7.95v1.25a1.75 1.75 0 0 1-1.75 1.75H3.7a1.75 1.75 0 0 1-1.75-1.75v-2.172c0-.73.29-1.429.806-1.944L8.99 9.948a.275.275 0 0 0 .07-.244A6.386 6.386 0 0 1 8.95 8.6Zm9.3-1.6a1.25 1.25 0 1 0-2.5 0 1.25 1.25 0 0 0 2.5 0Z" fill={selectedElement?.id === element.id ? "#000000" : "#ffffff"} /></svg>
+                      {element.name}
+                    </div>
+                    <div className="flex gap-2 items-center">
+                      {element.isSensitive && (
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a4 4 0 0 1 4 4v2h2.5A1.5 1.5 0 0 1 20 9.5v11a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 20.5v-11A1.5 1.5 0 0 1 5.5 8H8V6a4 4 0 0 1 4-4Zm0 11.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3ZM12 4a2 2 0 0 0-2 2v2h4V6a2 2 0 0 0-2-2Z" fill="#404040" /></svg>
+                      )}
+                      {(element.idsOfMembersWhoCanEdit.includes(session.user.id) || element.createdBy.id === session.user.id || selectedFolder.createdBy.id === session.user.id) && (
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13.94 5 19 10.06 9.062 20a2.25 2.25 0 0 1-.999.58l-5.116 1.395a.75.75 0 0 1-.92-.921l1.395-5.116a2.25 2.25 0 0 1 .58-.999L13.938 5Zm7.09-2.03a3.578 3.578 0 0 1 0 5.06l-.97.97L15 3.94l.97-.97a3.578 3.578 0 0 1 5.06 0Z" fill="#404040" /></svg>
+                      )}
+                      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 9.005a4 4 0 1 1 0 8 4 4 0 0 1 0-8ZM12 5.5c4.613 0 8.596 3.15 9.701 7.564a.75.75 0 1 1-1.455.365 8.503 8.503 0 0 0-16.493.004.75.75 0 0 1-1.455-.363A10.003 10.003 0 0 1 12 5.5Z" fill="#404040" /></svg>
+                    </div>
+                  </button>
+                  {index < elements.length - 1 && (
+                    <hr className="border-neutral-700" />
+                  )}
+                </>
               ))}
             </div>
           </main>

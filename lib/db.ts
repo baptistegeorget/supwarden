@@ -319,7 +319,7 @@ export async function getElementToExport(id: string) {
 
   const elementsCollection = db.collection<ElementModel>("elements")
 
-  const elements = await elementsCollection.find({ user: new ObjectId(id) }).toArray()
+  const elements = await elementsCollection.find({ createdBy: new ObjectId(id) }).toArray()
 
   return elements
 }
