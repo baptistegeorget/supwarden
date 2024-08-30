@@ -1,5 +1,5 @@
 import { getSession } from "@/lib/auth"
-import { getElementsByUserId, getFolderById, getUserById } from "@/lib/db"
+import { getElementToExport, getFolderById, getUserById } from "@/lib/db"
 import { ElementResponse, FolderModel, UserModel } from "@/types"
 import { WithId } from "mongodb"
 import CryptoJS from "crypto-js"
@@ -62,7 +62,7 @@ export async function GET(_request: Request, { params }: { params: { userId: str
     }
 
     // Get elements to export
-    const elements = await getElementsByUserId(user._id.toHexString())
+    const elements = await getElementToExport(user._id.toHexString())
 
     // Return the response
     const elementsResponse: ElementResponse[] = await Promise.all(elements.map(async (element) => {
