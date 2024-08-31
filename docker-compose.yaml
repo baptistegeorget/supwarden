@@ -1,0 +1,19 @@
+name: supwarden
+
+services:
+  app:
+    build: .
+    ports:
+      - "80:3000"
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    volumes:
+      - mongo_data_db:/data/db
+      - mongo_data_configdb:/data/configdb
+
+volumes:
+  mongo_data_db:
+  mongo_data_configdb:
