@@ -1,10 +1,13 @@
-import clientPromise from "@/lib/mongodb"
 import { ElementModel, FolderModel, InvitationModel, MemberModel, MessageModel, SessionModel, UserModel } from "@/types"
-import { ObjectId, WithId } from "mongodb"
+import { ObjectId, WithId, MongoClient } from "mongodb"
+
+if (!process.env.MONGODB_URI) {
+  throw new Error("Invalid/Missing environment variable: MONGODB_URI")
+}
+
+const client = new MongoClient(process.env.MONGODB_URI)
 
 export async function checkIfEmailIsUsed(email: string) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const usersCollection = db.collection<UserModel>("users")
@@ -15,8 +18,6 @@ export async function checkIfEmailIsUsed(email: string) {
 }
 
 export async function createUser(user: UserModel) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const usersCollection = db.collection<UserModel>("users")
@@ -27,8 +28,6 @@ export async function createUser(user: UserModel) {
 }
 
 export async function createFolder(folder: FolderModel) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const foldersCollection = db.collection<FolderModel>("folders")
@@ -39,8 +38,6 @@ export async function createFolder(folder: FolderModel) {
 }
 
 export async function getUserByCredentials(email: string, password: string) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const usersCollection = db.collection<UserModel>("users")
@@ -51,8 +48,6 @@ export async function getUserByCredentials(email: string, password: string) {
 }
 
 export async function createSession(session: SessionModel) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const sessionsCollection = db.collection<SessionModel>("sessions")
@@ -63,8 +58,6 @@ export async function createSession(session: SessionModel) {
 }
 
 export async function getUserById(id: string) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const usersCollection = db.collection<UserModel>("users")
@@ -75,8 +68,6 @@ export async function getUserById(id: string) {
 }
 
 export async function createMember(member: MemberModel) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const membersCollection = db.collection<MemberModel>("members")
@@ -87,8 +78,6 @@ export async function createMember(member: MemberModel) {
 }
 
 export async function getFoldersByUserId(id: string) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const membersCollection = db.collection<MemberModel>("members")
@@ -103,8 +92,6 @@ export async function getFoldersByUserId(id: string) {
 }
 
 export async function getFolderById(id: string) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const foldersCollection = db.collection<FolderModel>("folders")
@@ -115,8 +102,6 @@ export async function getFolderById(id: string) {
 }
 
 export async function checkIfMemberExist(userId: string, folderId: string) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const membersCollection = db.collection<MemberModel>("members")
@@ -127,8 +112,6 @@ export async function checkIfMemberExist(userId: string, folderId: string) {
 }
 
 export async function getUserByEmail(email: string) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const usersCollection = db.collection<UserModel>("users")
@@ -139,8 +122,6 @@ export async function getUserByEmail(email: string) {
 }
 
 export async function checkIfPendingInvitationExist(userId: string, folderId: string) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const invitationsCollection = db.collection<InvitationModel>("invitations")
@@ -151,8 +132,6 @@ export async function checkIfPendingInvitationExist(userId: string, folderId: st
 }
 
 export async function createInvitation(invitation: InvitationModel) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const invitationsCollection = db.collection<InvitationModel>("invitations")
@@ -163,8 +142,6 @@ export async function createInvitation(invitation: InvitationModel) {
 }
 
 export async function getPendingInvitationsByUserId(id: string) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const invitationsCollection = db.collection<InvitationModel>("invitations")
@@ -175,8 +152,6 @@ export async function getPendingInvitationsByUserId(id: string) {
 }
 
 export async function getInvitationById(id: string) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const invitationsCollection = db.collection<InvitationModel>("invitations")
@@ -187,8 +162,6 @@ export async function getInvitationById(id: string) {
 }
 
 export async function updateInvitation(invitation: WithId<InvitationModel>) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const invitationsCollection = db.collection<InvitationModel>("invitations")
@@ -199,8 +172,6 @@ export async function updateInvitation(invitation: WithId<InvitationModel>) {
 }
 
 export async function getMembersByFolderId(id: string) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const membersCollection = db.collection<MemberModel>("members")
@@ -211,8 +182,6 @@ export async function getMembersByFolderId(id: string) {
 }
 
 export async function createElement(element: ElementModel) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const elementsCollection = db.collection<ElementModel>("elements")
@@ -223,8 +192,6 @@ export async function createElement(element: ElementModel) {
 }
 
 export async function getElementsByFolderId(id: string, query?: string) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const elementsCollection = db.collection<ElementModel>("elements")
@@ -241,8 +208,6 @@ export async function getElementsByFolderId(id: string, query?: string) {
 }
 
 export async function getElementById(id: string) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const elementsCollection = db.collection<ElementModel>("elements")
@@ -253,8 +218,6 @@ export async function getElementById(id: string) {
 }
 
 export async function updateElement(element: WithId<ElementModel>) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const elementsCollection = db.collection<ElementModel>("elements")
@@ -265,8 +228,6 @@ export async function updateElement(element: WithId<ElementModel>) {
 }
 
 export async function deleteElement(element: WithId<ElementModel>) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const elementsCollection = db.collection<ElementModel>("elements")
@@ -277,8 +238,6 @@ export async function deleteElement(element: WithId<ElementModel>) {
 }
 
 export async function updateUser(user: WithId<UserModel>) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const usersCollection = db.collection<UserModel>("users")
@@ -289,8 +248,6 @@ export async function updateUser(user: WithId<UserModel>) {
 }
 
 export async function createMessage(message: MessageModel) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const messagesCollection = db.collection<MessageModel>("messages")
@@ -301,8 +258,6 @@ export async function createMessage(message: MessageModel) {
 }
 
 export async function getMessagesByFolderId(id: string) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const messagesCollection = db.collection<MessageModel>("messages")
@@ -313,8 +268,6 @@ export async function getMessagesByFolderId(id: string) {
 }
 
 export async function getElementToExport(id: string) {
-  const client = await clientPromise
-
   const db = client.db()
 
   const elementsCollection = db.collection<ElementModel>("elements")
