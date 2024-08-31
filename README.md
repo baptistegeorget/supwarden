@@ -39,6 +39,12 @@ docker-compose up
 
 ### 💻 Without Docker
 
+Bash
 ```bash
 npm install && npm run build && npm start
+```
+
+PowerShell
+```powershell
+npm install; npm run build; npm start
 ```
